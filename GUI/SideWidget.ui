@@ -244,7 +244,7 @@
     <attribute name="label">
      <string>Parametric curves</string>
     </attribute>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -273,7 +273,22 @@
         </item>
         <item>
          <property name="text">
-          <string>Circle</string>
+          <string>Spiral</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Helix</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Ellipse</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Cyclo</string>
          </property>
         </item>
        </widget>
@@ -295,6 +310,14 @@
     </attribute>
    </widget>
    <widget class="QWidget" name="page_3">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>271</width>
+      <height>180</height>
+     </rect>
+    </property>
     <attribute name="label">
      <string>Models</string>
     </attribute>

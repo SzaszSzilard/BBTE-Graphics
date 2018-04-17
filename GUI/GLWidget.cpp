@@ -1,11 +1,12 @@
 #include "GLWidget.h"
-#include <GL/glu.h>
-
 #include <iostream>
-using namespace std;
-
+#include <GL/glu.h>
 #include <Core/Exceptions.h>
 
+#include "../Core/Matrices.h"
+#include "../Test/TestFunctions.h"
+
+using namespace std;
 namespace cagd
 {
     //--------------------------------
@@ -13,6 +14,16 @@ namespace cagd
     //--------------------------------
     GLWidget::GLWidget(QWidget *parent, const QGLFormat &format): QGLWidget(format, parent)
     {
+    }
+
+    GLWidget::~GLWidget() {
+        for (GLuint i = 0; i < _num_of_pc; i++)
+            if (_pc[i])
+                delete _pc[i], _pc[i] = 0;
+
+        for (GLuint i = 0; i < _num_of_pc; i++)
+            if (_image_of_pc[i])
+                delete _image_of_pc[i], _image_of_pc[i] = 0;
     }
 
     //--------------------------------------------------------------------------------------
@@ -46,7 +57,7 @@ namespace cagd
         glEnable(GL_DEPTH_TEST);
 
         // setting the color of background
-        glClearColor(0.8f, 0.3f, 0.1f, 0.1f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         // initial values of transformation parameters
         _angle_x = _angle_y = _angle_z = 0.0;
@@ -77,6 +88,70 @@ namespace cagd
         {
             cout << e << endl;
         }
+
+        glEnable(GL_POINT_SMOOTH);
+        glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+        glEnable(GL_LINE_SMOOTH);
+        glHint(GL_LINE_SMOOTH_HINT,GL_NICEST);
+        glEnable(GL_POLYGON_SMOOTH);
+        glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+        glEnable(GL_DEPTH_TEST);
+
+        glewInit();
+
+        _num_of_pc = 5;
+        _pc.ResizeRows(_num_of_pc);
+
+        RowMatrix<ParametricCurve3::Derivative> derivative(3);
+        derivative(0) = spiral_on_cone::d0;
+        derivative(1) = spiral_on_cone::d1;
+        derivative(2) = spiral_on_cone::d2;
+        _pc[0] = new ParametricCurve3(derivative, spiral_on_cone::u_min, spiral_on_cone::u_max);
+
+        derivative(0) = spiral::d0;
+        derivative(1) = spiral::d1;
+        derivative(2) = spiral::d2;
+        _pc[1] = new ParametricCurve3(derivative, spiral::u_min, spiral::u_max);
+
+        derivative(0) = helix::d0;
+        derivative(1) = helix::d1;
+        derivative(2) = helix::d2;
+        _pc[2] = new ParametricCurve3(derivative, helix::u_min, helix::u_max);
+
+        derivative(0) = ellipse::d0;
+        derivative(1) = ellipse::d1;
+        derivative(2) = ellipse::d2;
+        _pc[3] = new ParametricCurve3(derivative, ellipse::u_min, ellipse::u_max);
+
+        derivative(0) = cyclo::d0;
+        derivative(1) = cyclo::d1;
+        derivative(2) = cyclo::d2;
+        _pc[4] = new ParametricCurve3(derivative, cyclo::u_min, cyclo::u_max);
+
+        cout << "so far so good" << endl;
+
+        _image_of_pc.ResizeRows(_num_of_pc);
+
+        GLuint div_point_count = 200;
+        GLenum usage_flag = GL_STATIC_DRAW;
+        for (int i = 0; i < 5; i++) {
+            if (! _pc[i]) {
+                cout << "parametric curve wasnt initialized" << endl;
+            }
+
+            _image_of_pc[i] = _pc[i]->GenerateImage(div_point_count, usage_flag);
+
+            if (! _image_of_pc[i]) {
+                cout << "image of parametric curve wasnt initialized" << endl;
+            }
+
+            if (! _image_of_pc[i]->UpdateVertexBufferObjects(usage_flag)) {
+                cout << "Could not create the vertex buffer object of the parametrci curve" << endl;
+            }
+        }
     }
 
     //-----------------------
@@ -96,6 +171,24 @@ namespace cagd
             glRotatef(_angle_z, 0.0, 0.0, 1.0);
             glTranslated(_trans_x, _trans_y, _trans_z);
             glScaled(_zoom, _zoom, _zoom);
+
+            cout << _index;
+            if (_image_of_pc[_index]) {
+                glColor3f(1.0,1.0,1.0);
+                _image_of_pc[_index]->RenderDerivatives(0, GL_LINE_STRIP);
+
+                glPointSize(5.0);
+
+                    glColor3f(0.0, 0.5, 0.0);
+                    _image_of_pc[_index]->RenderDerivatives(1, GL_LINES);
+                    _image_of_pc[_index]->RenderDerivatives(1, GL_POINTS);
+
+                    glColor3f(1.0, 0.5, 0.0);
+                    _image_of_pc[_index]->RenderDerivatives(2, GL_LINES);
+                    _image_of_pc[_index]->RenderDerivatives(2, GL_POINTS);
+
+                glPointSize(1.0);
+            }
 
             // render your geometry (this is oldest OpenGL rendering technique, later we will use some advanced methods)
 

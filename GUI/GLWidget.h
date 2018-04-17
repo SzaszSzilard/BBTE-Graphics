@@ -4,6 +4,9 @@
 #include <QGLWidget>
 #include <QGLFormat>
 
+#include "../Parametric/ParametricCurves3.h"
+
+
 namespace cagd
 {
     class GLWidget: public QGLWidget
@@ -28,6 +31,10 @@ namespace cagd
         // your other declarations
         int         _index;
 
+        RowMatrix<ParametricCurve3*> _pc;
+        RowMatrix<GenericCurve3*> _image_of_pc;
+        GLuint _num_of_pc;
+
 
     public:
         // special and default constructor
@@ -38,6 +45,8 @@ namespace cagd
         void initializeGL();
         void paintGL();
         void resizeGL(int w, int h);
+
+        virtual ~GLWidget();
 
     public slots:
         // public event handling methods/slots
