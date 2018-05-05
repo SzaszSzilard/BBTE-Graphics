@@ -221,7 +221,7 @@ GenericCurve3* LinearCombination3::GenerateImage(GLuint max_order_of_derivatives
         GLdouble u_step = (_u_max - _u_min) / (div_point_count - 1);
         Derivatives d;
 
-        for (GLuint i = 0; i < div_point_count - 1; ++i)
+        for (GLuint i = 0; i < div_point_count; ++i)
         {
             GLdouble u = min(_u_min + i*u_step, _u_max);
             if (!CalculateDerivatives(max_order_of_derivatives, u, d))

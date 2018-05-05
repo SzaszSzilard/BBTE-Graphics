@@ -64,6 +64,6 @@ namespace cagd
 
      DCoordinate3 d0(GLdouble);
      DCoordinate3 d1(GLdouble);
-
+     DCoordinate3 d2(GLdouble);
      }
 }

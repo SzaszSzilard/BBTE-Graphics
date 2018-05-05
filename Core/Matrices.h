@@ -178,9 +178,12 @@ namespace cagd
     template <typename T>
     Matrix<T>&  Matrix<T>::operator =(const Matrix<T>& m)
     {
-        _row_count = m._row_count;
-        _column_count = m._column_count;
-        _data = m._data;
+        if (this != &m)
+        {
+            _row_count = m._row_count;
+            _column_count = m._column_count;
+            _data = m._data;
+        }
 
         return *this;
     }
@@ -217,7 +220,7 @@ namespace cagd
     GLboolean Matrix<T>::ResizeRows(GLuint row_count)
     {
         try {
-            _data.resize(row_count);
+            _data.resize(row_count, std::vector<T>(_column_count));
             _row_count = row_count;
         }
         catch (std::bad_alloc&)
@@ -226,7 +229,7 @@ namespace cagd
         }
 
         return GL_TRUE;
-    };
+    }
 
     template <typename T>
     GLboolean Matrix<T>::ResizeColumns(GLuint column_count)
@@ -262,8 +265,8 @@ namespace cagd
     {
         if (_row_count==column._row_count && index < _column_count)
         {
-            for (int i=0; i<_row_count; i++)
-                _data[i][index] = column[i];
+            for (GLuint i=0; i<_row_count; i++)
+                _data[i][index] = column._data[i][0];
             return GL_TRUE;
         }
         return false;
@@ -271,7 +274,11 @@ namespace cagd
 
     // destructor
     template <typename T>
-    Matrix<T>::~Matrix(){}
+    Matrix<T>::~Matrix()
+    {
+        _row_count = _column_count = 0;
+        _data.clear();
+    }
 
     //-----------------------------------------------------
     // homework: implementation of template class RowMatrix
@@ -310,8 +317,8 @@ namespace cagd
 
     // a row matrix consists of a single row
     template <typename T>
-    GLboolean RowMatrix<T>::ResizeRows(GLuint){
-            return GL_FALSE;
+    GLboolean RowMatrix<T>::ResizeRows(GLuint row_count){
+            return (row_count == 1);
     }
 
     //--------------------------------------------------------
@@ -354,9 +361,9 @@ namespace cagd
 
     // a column matrix consists of a single column
     template <typename T>
-    GLboolean ColumnMatrix<T>::ResizeColumns(GLuint)
+    GLboolean ColumnMatrix<T>::ResizeColumns(GLuint column_count)
     {
-        return GL_FALSE;
+        return (column_count == 1);
     }
 
 	//------------------------------------------------------------
@@ -365,14 +372,14 @@ namespace cagd
 
     // special constructor
         template <typename T>
-        TriangularMatrix<T>::TriangularMatrix(GLuint row_count)
+        TriangularMatrix<T>::TriangularMatrix(GLuint row_count):
+            _row_count(row_count),
+            _data(_row_count)
         {
-            _data.resize(row_count);
             for (GLuint i=0;i<row_count;i++)
             {
                 _data[i].resize(i+1);
             }
-            _row_count=row_count;
         }
 
         template <typename T>
@@ -393,6 +400,22 @@ namespace cagd
         {
             return this->_row_count;
         }
+
+        // to do: resize rows
+        template <typename T>
+        GLboolean TriangularMatrix<T>::ResizeRows(GLuint row_count)
+        {
+            this->_data.resize(row_count);
+            for (GLuint i=_row_count; i<row_count; i++)
+                _data[i].resize(i+1);
+
+            _row_count = row_count;
+
+            return GL_TRUE;
+        }
+
+        //template <typename T>
+        //virtual GLboolean ResizeColumns(GLuint column_count);
 
 
     //------------------------------------------------------------------------------

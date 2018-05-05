@@ -5,6 +5,7 @@
 #include <QGLFormat>
 
 #include "../Parametric/ParametricCurves3.h"
+#include "../Cyclic/CyclicCurve3.h"
 
 
 namespace cagd
@@ -34,6 +35,13 @@ namespace cagd
         RowMatrix<ParametricCurve3*> _pc;
         RowMatrix<GenericCurve3*> _image_of_pc;
         GLuint _num_of_pc;
+
+        GLuint _n;
+        CyclicCurve3* _cc;
+
+        GLuint _mod;
+        GLuint _div;
+        GenericCurve3 *_img_cc;
 
 
     public:

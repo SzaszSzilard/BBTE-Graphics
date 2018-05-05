@@ -43,10 +43,6 @@ unix {
     LIBS += -lGLEW -lGLU
 }
 
-FORMS += \
-    GUI/MainWindow.ui \
-    GUI/SideWidget.ui
-
 HEADERS += \
     Core/Constants.h \
     Core/DCoordinates3.h \
@@ -55,6 +51,8 @@ HEADERS += \
     Core/LinearCombination3.h \
     Core/Matrices.h \
     Core/RealSquareMatrices.h \
+    Cyclic/CyclicCurve3.h \
+    Dependencies/Include/GL/glew.h \
     GUI/GLWidget.h \
     GUI/MainWindow.h \
     GUI/SideWidget.h \
@@ -65,6 +63,7 @@ SOURCES += \
     Core/GenericCurves3.cpp \
     Core/LinearCombination3.cpp \
     Core/RealSquareMatrices.cpp \
+    Cyclic/CyclicCurve3.cpp \
     GUI/GLWidget.cpp \
     GUI/MainWindow.cpp \
     GUI/SideWidget.cpp \
@@ -72,5 +71,8 @@ SOURCES += \
     Test/TestFunctions.cpp \
     main.cpp
 
+FORMS += \
+    GUI/MainWindow.ui \
+    GUI/SideWidget.ui
 
 

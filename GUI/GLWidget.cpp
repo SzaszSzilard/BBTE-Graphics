@@ -3,6 +3,7 @@
 #include <GL/glu.h>
 #include <Core/Exceptions.h>
 
+#include "../Core/Constants.h"
 #include "../Core/Matrices.h"
 #include "../Test/TestFunctions.h"
 
@@ -101,11 +102,35 @@ namespace cagd
         glEnable(GL_DEPTH_TEST);
 
         glewInit();
+        // -------------- to the new world --------------
 
-        _num_of_pc = 5;
-        _pc.ResizeRows(_num_of_pc);
+        _n  = 4;
+        _cc = new CyclicCurve3(_n);
+
+        GLdouble step = TWO_PI / (2 * _n + 1);
+
+        for (GLuint i = 0; i <= 2*_n; i++)
+        {
+            GLdouble u = i * step;
+
+            DCoordinate3 &cp = (*_cc)[i];
+
+            cp[0] = cos(u);
+            cp[1] = sin(u);
+            cp[2] = -2.0 + 4.0 * (GLdouble)rand() / RAND_MAX;
+        }
+        _cc->UpdateVertexBufferObjectsOfData();
+
+        _mod = 3;
+        _div = 100;
+        _img_cc = _cc->GenerateImage(_mod, _div);
+        _img_cc->UpdateVertexBufferObjects();
+
+        _num_of_pc = 6;
+        _pc.ResizeColumns(_num_of_pc);
 
         RowMatrix<ParametricCurve3::Derivative> derivative(3);
+
         derivative(0) = spiral_on_cone::d0;
         derivative(1) = spiral_on_cone::d1;
         derivative(2) = spiral_on_cone::d2;
@@ -131,13 +156,16 @@ namespace cagd
         derivative(2) = cyclo::d2;
         _pc[4] = new ParametricCurve3(derivative, cyclo::u_min, cyclo::u_max);
 
-        cout << "so far so good" << endl;
+        derivative(0) = torus::d0;
+        derivative(1) = torus::d1;
+        derivative(2) = torus::d1;
+        _pc[5] = new ParametricCurve3(derivative, cyclo::u_min, cyclo::u_max);
 
-        _image_of_pc.ResizeRows(_num_of_pc);
+        _image_of_pc.ResizeColumns(_num_of_pc);
 
-        GLuint div_point_count = 200;
+        GLuint div_point_count = 500;
         GLenum usage_flag = GL_STATIC_DRAW;
-        for (int i = 0; i < 5; i++) {
+        for (GLuint i = 0; i < _num_of_pc; i++) {
             if (! _pc[i]) {
                 cout << "parametric curve wasnt initialized" << endl;
             }
@@ -172,59 +200,37 @@ namespace cagd
             glTranslated(_trans_x, _trans_y, _trans_z);
             glScaled(_zoom, _zoom, _zoom);
 
-            cout << _index;
-            if (_image_of_pc[_index]) {
-                glColor3f(1.0,1.0,1.0);
-                _image_of_pc[_index]->RenderDerivatives(0, GL_LINE_STRIP);
+//            if (_image_of_pc[_index]) {
+//                glColor3f(1.0,1.0,1.0);
+//                _image_of_pc[_index]->RenderDerivatives(0, GL_LINE_STRIP);
 
-                glPointSize(5.0);
+//                glPointSize(5.0);
 
-                    glColor3f(0.0, 0.5, 0.0);
-                    _image_of_pc[_index]->RenderDerivatives(1, GL_LINES);
-                    _image_of_pc[_index]->RenderDerivatives(1, GL_POINTS);
+//                    glColor3f(0.0, 0.5, 0.0);
+//                    _image_of_pc[_index]->RenderDerivatives(1, GL_LINES);
+//                    _image_of_pc[_index]->RenderDerivatives(1, GL_POINTS);
 
-                    glColor3f(1.0, 0.5, 0.0);
-                    _image_of_pc[_index]->RenderDerivatives(2, GL_LINES);
-                    _image_of_pc[_index]->RenderDerivatives(2, GL_POINTS);
+//                    glColor3f(1.0, 0.5, 0.0);
+//                    _image_of_pc[_index]->RenderDerivatives(2, GL_LINES);
+//                    _image_of_pc[_index]->RenderDerivatives(2, GL_POINTS);
 
-                glPointSize(1.0);
+//                glPointSize(1.0);
+//            }
+
+            if (_cc)
+            {
+                _cc->RenderData(GL_LINE_LOOP);
             }
 
-            // render your geometry (this is oldest OpenGL rendering technique, later we will use some advanced methods)
-
-//            glColor3f(1.0f, 1.0f, 1.0f);
-//            glBegin(GL_LINES);
-//                glVertex3f(0.0f, 0.0f, 0.0f);
-//                glVertex3f(1.1f, 0.0f, 0.0f);
-
-//                glVertex3f(0.0f, 0.0f, 0.0f);
-//                glVertex3f(0.0f, 1.1f, 0.0f);
-
-//                glVertex3f(0.0f, 0.0f, 0.0f);
-//                glVertex3f(0.0f, 0.0f, 1.1f);
-//            glEnd();
-
-//            glBegin(GL_TRIANGLES);
-//                // attributes
-//                glColor3f(1.0f, 0.0f, 0.0f);
-//                // associated with position
-//                glVertex3f(1.0f, 0.0f, 0.0f);
-
-//                // attributes
-//                glColor3f(0.0, 1.0, 0.0);
-//                // associated with position
-//                glVertex3f(0.0, 1.0, 0.0);
-
-//                // attributes
-//                glColor3f(0.0f, 0.0f, 1.0f);
-//                // associated with position
-//                glVertex3f(0.0f, 0.0f, 1.0f);
-//            glEnd();
-
-//            if (_image_of_pc[_index])
-//            {
-//                //
-//            }
+            if (_img_cc)
+            {
+                glColor3f(1.0, 0.0, 0.0);
+                _img_cc->RenderDerivatives(0, GL_LINE_LOOP);
+                glColor3f(0.0, 0.5, 0.0);
+                _img_cc->RenderDerivatives(1, GL_LINES);
+                glColor3f(0.1, 0.5, 0.9);
+                _img_cc->RenderDerivatives(2, GL_LINES);
+            }
 
         // pops the current matrix stack, replacing the current matrix with the one below it on the stack,
         // i.e., the original model view matrix is restored
@@ -326,7 +332,6 @@ namespace cagd
         if (_index != index)
         {
             _index = index;
-            cout << _index << endl;
             updateGL();
         }
     }

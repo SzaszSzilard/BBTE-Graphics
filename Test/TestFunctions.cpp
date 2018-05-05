@@ -37,7 +37,7 @@ DCoordinate3 spiral::d0(GLdouble u)
 DCoordinate3 spiral::d1(GLdouble u)
 {
     GLdouble c = cos(u), s = sin(u);
-    return DCoordinate3(-s,c,1/4);
+    return DCoordinate3(-s,c,1.0/4);
 }
 
 DCoordinate3 spiral::d2(GLdouble u)
@@ -75,12 +75,12 @@ DCoordinate3 cyclo::d0(GLdouble u)
 
 DCoordinate3 cyclo::d1(GLdouble u)
 {
-    return 0.1 * DCoordinate3(2*(1-cos(u)), 2*sin(u), 0);
+    return 0.1 * DCoordinate3(2-2*cos(u), 2*sin(u), 0);
 }
 
 DCoordinate3 cyclo::d2(GLdouble u)
 {
-    return DCoordinate3(sin(u), 2*cos(u), 0);
+    return DCoordinate3(2*sin(u), 2*cos(u), 0);
 }
 
 
@@ -112,17 +112,16 @@ DCoordinate3 helix::d0(GLdouble u)
 
 DCoordinate3 helix::d1(GLdouble u)
 {
-    return 0.2* DCoordinate3(-sin(u),cos(u), 1/7);
+    return 0.2* DCoordinate3(-sin(u),cos(u), 1.0/7);
 }
 
 DCoordinate3 helix::d2(GLdouble u)
 {
-    return 0.2* DCoordinate3(-sin(u),cos(u), 0);
+    return 0.2* DCoordinate3(-cos(u),-sin(u), 0);
 }
 
-
 GLdouble torus::u_min = 0.0;
-GLdouble torus::u_max = 18.8493;
+GLdouble torus::u_max = 6*PI;
 
 DCoordinate3 torus::d0(GLdouble u)
 {
@@ -132,4 +131,9 @@ DCoordinate3 torus::d0(GLdouble u)
 DCoordinate3 torus::d1(GLdouble u)
 {
     return DCoordinate3(-(2+cos(2*u/3))*sin(u)-2.0/3*sin(2*u/3)*cos(u), (2+cos(2*u/3))*cos(u)-2.0/3*sin(2*u/3)*sin(u), 2.0/3*cos(2*u/3));
+}
+
+DCoordinate3 torus::d2(GLdouble)
+{
+    return DCoordinate3();
 }
