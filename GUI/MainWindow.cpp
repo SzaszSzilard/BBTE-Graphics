@@ -51,7 +51,7 @@ namespace cagd
 
         connect(_side_widget->pc_combo, SIGNAL(currentIndexChanged(int)), _gl_widget, SLOT(set_parametric_curve_index(int)));
         connect(_side_widget->pushButton, SIGNAL(pressed()), _gl_widget, SLOT(set_cyclic_curve_index()));
-        //connect(_side_widget->cc_combo,SIGNAL(activated(int)), _gl_widget, SLOT(set_cyclic_curve_index(int)));
+        connect(_side_widget->ps_combo, SIGNAL(currentIndexChanged(int)), _gl_widget, SLOT(set_parametric_surface_index(int)));
     }
 
     //--------------------------------

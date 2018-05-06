@@ -86,6 +86,7 @@ namespace cagd
             // knim1445
             init_parametric_curves();
             init_cyclic_curves();
+            init_parametric_surfaces();
         }
         catch (Exception &e)
         {
@@ -130,6 +131,9 @@ namespace cagd
                 break;
             case 2:
                 render_cc();
+                break;
+            case 4:
+                render_ps();
                 break;
             default:
                 render_pc();
@@ -247,6 +251,17 @@ namespace cagd
         updateGL();
     }
 
+    void GLWidget::set_parametric_surface_index(int index)
+    {
+        if (_ps_index != index)
+        {
+            _ps_index = index;
+            _page_index = 4;
+            updateGL();
+        }
+    }
+
+
     // knim1445
     void GLWidget::init_parametric_curves(){
         _num_of_pc = 6;
@@ -329,6 +344,39 @@ namespace cagd
         _img_cc->UpdateVertexBufferObjects();
     }
 
+    void GLWidget::init_parametric_surfaces(){
+        _num_of_ps = 5;
+        _ps.ResizeColumns(_num_of_ps);
+
+        TriangularMatrix<ParametricSurface3::PartialDerivative> derivative(3);
+
+        derivative(0) = torus_surface::d00;
+        derivative(1) = torus_surface::d01;
+        derivative(2) = torus_surface::d10;
+        _ps[0] = new ParametricSurface3(derivative, torus_surface::u_min, torus_surface::u_max,torus_surface::v_min,torus_surface::v_max);
+
+        _image_of_ps.ResizeColumns(_num_of_ps);
+
+        GLuint div_point_count = 500;
+        GLuint v_point_count = 500;
+        GLenum usage_flag = GL_STATIC_DRAW;
+        for (GLuint i = 0; i < _num_of_ps; i++) {
+            if (! _ps[i]) {
+                cout << "parametric curve wasnt initialized" << endl;
+            }
+
+            _image_of_ps[i] = _ps[i]->GenerateImage(div_point_count,v_point_count,usage_flag);
+
+            if (! _image_of_ps[i]) {
+                cout << "image of parametric curve wasnt initialized" << endl;
+            }
+
+            if (! _image_of_ps[i]->UpdateVertexBufferObjects(usage_flag)) {
+                cout << "Could not create the vertex buffer object of the parametrci curve" << endl;
+            }
+        }
+    }
+
     void GLWidget::render_pc(){
         if (_image_of_pc[_index]) {
             glColor3f(1.0,1.0,1.0);
@@ -343,6 +391,25 @@ namespace cagd
                 glColor3f(1.0, 0.5, 0.0);
                 _image_of_pc[_index]->RenderDerivatives(2, GL_LINES);
                 _image_of_pc[_index]->RenderDerivatives(2, GL_POINTS);
+
+            glPointSize(1.0);
+        }
+    }
+
+    void GLWidget::render_ps(){
+        if (_image_of_ps[_ps_index]) {
+            glColor3f(1.0,1.0,1.0);
+            _image_of_ps[_ps_index]->RenderDerivatives(0, GL_LINE_STRIP);
+
+            glPointSize(5.0);
+
+                glColor3f(0.0, 0.5, 0.0);
+                _image_of_ps[_ps_index]->RenderDerivatives(1, GL_LINES);
+                _image_of_ps[_ps_index]->RenderDerivatives(1, GL_POINTS);
+
+                glColor3f(1.0, 0.5, 0.0);
+                _image_of_ps[_ps_index]->RenderDerivatives(2, GL_LINES);
+                _image_of_ps[_ps_index]->RenderDerivatives(2, GL_POINTS);
 
             glPointSize(1.0);
         }

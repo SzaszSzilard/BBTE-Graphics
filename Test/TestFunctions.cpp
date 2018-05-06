@@ -137,3 +137,120 @@ DCoordinate3 torus::d2(GLdouble)
 {
     return DCoordinate3();
 }
+
+//---------------------------Parametric surfaces----------------------------
+
+GLdouble torus_surface::u_min = 0.0;
+GLdouble torus_surface::u_max = TWO_PI;
+GLdouble torus_surface::v_min = 0.0;
+GLdouble torus_surface::v_max = TWO_PI;
+GLdouble torus_surface::R = 1.0;
+GLdouble torus_surface::r = 0.5;
+
+DCoordinate3 torus_surface::d00(GLdouble u, GLdouble v)
+{
+    return DCoordinate3((R + r * sin(u)) * cos(v), (R + r * sin(u)) * sin(v), r * cos(u));
+}
+
+DCoordinate3 torus_surface::d10(GLdouble u, GLdouble v)
+{
+    return DCoordinate3(r * cos(u) * cos(v), r * cos(u) * sin(v), -r * sin(u));
+}
+
+DCoordinate3 torus_surface::d01(GLdouble u, GLdouble v)
+{
+    return DCoordinate3(-(R + r * sin(u)) * sin(v), (R + r * sin(u)) * cos(v), 0.0);
+}
+
+GLdouble alfred_klein_bottle::u_min = 0;
+GLdouble alfred_klein_bottle::u_max = TWO_PI;
+GLdouble alfred_klein_bottle::v_min = 0;
+GLdouble alfred_klein_bottle::v_max = TWO_PI;
+
+DCoordinate3 alfred_klein_bottle::d00(GLdouble u, GLdouble v)
+{
+    return DCoordinate3(3 * cos(u) + 1.0/2.0 * (1 + cos(2 * u)) * sin(v) - 1.0/2.0 * sin(2 * u) * sin(2 * v),
+                        3 * sin(u) + 1.0/2.0 * sin(2 * u) * sin(v) - 1.0/2.0 * (1 - cos(2 * u)) * sin(2 * v),
+                        cos(u) * sin(2 * v) + sin(u) * sin(v));
+}
+
+DCoordinate3 alfred_klein_bottle::d10(GLdouble u, GLdouble v)
+{
+    return DCoordinate3(-3 * sin(u) - sin(2 * u) * sin(v) + cos(2 * u) * sin(2 * v),
+                        3 * cos(u) + cos(2 * u) * sin(v) - sin(2 * u) * sin(2 * v),
+                        -sin(u) * sin(2 * v) + cos(u) * sin(v));
+}
+
+DCoordinate3 alfred_klein_bottle::d01(GLdouble u, GLdouble v)
+{
+    return DCoordinate3(1.0/2.0 * (1 + cos(2 * u)) * cos(v) - sin(2 * u) * cos(2 * v),
+                        1.0/2.0 * sin(2 * u) * cos(v) - (1 - cos(2 * u)) * cos(2 * v),
+                        2 * cos(u) * cos(2 * v) + sin(u) * cos(v));
+}
+
+GLdouble cylindrical_helicoid::u_min = 0;
+GLdouble cylindrical_helicoid::u_max = 2;
+GLdouble cylindrical_helicoid::v_min = 0;
+GLdouble cylindrical_helicoid::v_max = 3 * TWO_PI;
+
+DCoordinate3 cylindrical_helicoid::d00(GLdouble u, GLdouble v)
+{
+    return DCoordinate3((2 + u) * cos(v), (2 + u) * sin(v), v);
+}
+
+DCoordinate3 cylindrical_helicoid::d10(GLdouble u, GLdouble v)
+{
+    return DCoordinate3(3*cos(v), 3*sin(v), v);
+}
+
+DCoordinate3 cylindrical_helicoid::d01(GLdouble u, GLdouble v)
+{
+    return DCoordinate3(-(2 + u) * sin(v), (2 + u) * cos(v), 1);
+}
+
+GLdouble hyperboloid::u_min = 0;
+GLdouble hyperboloid::u_max = 3;
+GLdouble hyperboloid::v_min = 0;
+GLdouble hyperboloid::v_max = TWO_PI;
+
+DCoordinate3 hyperboloid::d00(GLdouble u, GLdouble v)
+{
+    return DCoordinate3((1 + cosh(u - 3.0/2.0)) * sin(v),
+                        (1 + cosh(u - 3.0/2.0)) * cos(v),
+                        sinh(u - 3.0/2.0));
+}
+
+DCoordinate3 hyperboloid::d10(GLdouble u, GLdouble v)
+{
+    return DCoordinate3(sinh(u - 3.0/2.0) * sin(v),
+                        sinh(u - 3.0/2.0) * cos(v),
+                        cosh(u - 3.0/2.0));
+}
+
+DCoordinate3 hyperboloid::d01(GLdouble u, GLdouble v)
+{
+    return DCoordinate3((1 + cosh(u - 3.0/2.0)) * cos(v),
+                        (1 + cosh(u - 3.0/2.0)) * sin(v),
+                        0);
+}
+
+GLdouble sphere::u_min = 0;
+GLdouble sphere::u_max = PI;
+GLdouble sphere::v_min = 0;
+GLdouble sphere::v_max = TWO_PI;
+GLdouble sphere::r = 1.0;
+
+DCoordinate3 sphere::d00(GLdouble u, GLdouble v)
+{
+    return DCoordinate3(r * sin(u) * cos(v), r * sin(u) * sin(v), r * cos(u));
+}
+
+DCoordinate3 sphere::d10(GLdouble u, GLdouble v)
+{
+    return DCoordinate3(r * cos(u) * cos(v), r * cos(u) * sin(v), -r * sin(u));
+}
+
+DCoordinate3 sphere::d01(GLdouble u, GLdouble v)
+{
+    return DCoordinate3(-r * sin(u) * sin(v), r * sin(u) * cos(v), 0);
+}

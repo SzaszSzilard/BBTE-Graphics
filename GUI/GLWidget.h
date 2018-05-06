@@ -5,6 +5,7 @@
 #include <QGLFormat>
 
 #include "../Parametric/ParametricCurves3.h"
+#include "../Parametric/ParametricSurfaces3.h"
 #include "../Cyclic/CyclicCurve3.h"
 
 
@@ -30,13 +31,18 @@ namespace cagd
         double      _trans_x, _trans_y, _trans_z;
 
         // your other declarations
-        int         _index;
-        int         _cc_index;
-        int         _page_index;
+        int         _index, _cc_index,_page_index;
+        int         _ps_index;
 
+        // variables needed by parametric curves
         RowMatrix<ParametricCurve3*> _pc;
         RowMatrix<GenericCurve3*> _image_of_pc;
         GLuint _num_of_pc;
+
+        // variables needed by parametric surfaces
+        RowMatrix<ParametricSurface3*> _ps;
+        RowMatrix<GenericCurve3*> _image_of_ps;
+        GLuint _num_of_ps;
 
         GLuint _n;
         CyclicCurve3* _cc;
@@ -73,9 +79,12 @@ namespace cagd
         void set_parametric_curve_index(int index);
         //knim1445
         void set_cyclic_curve_index();
+        void set_parametric_surface_index(int index);
         void init_parametric_curves();
         void init_cyclic_curves();
+        void init_parametric_surfaces();
         void render_pc();
         void render_cc();
+        void render_ps();
     };
 }
