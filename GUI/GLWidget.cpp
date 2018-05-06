@@ -104,63 +104,32 @@ namespace cagd
         glewInit();
         // -------------- to the new world --------------
 
-        _n  = 4;
-        _cc = new CyclicCurve3(_n);
 
-        GLdouble step = TWO_PI / (2 * _n + 1);
 
-        for (GLuint i = 0; i <= 2*_n; i++)
-        {
-            GLdouble u = i * step;
+//        _n  = 4;
+//        _cc = new CyclicCurve3(_n);
 
-            DCoordinate3 &cp = (*_cc)[i];
+//        GLdouble step = TWO_PI / (2 * _n + 1);
 
-            cp[0] = cos(u);
-            cp[1] = sin(u);
-            cp[2] = -2.0 + 4.0 * (GLdouble)rand() / RAND_MAX;
-        }
-        _cc->UpdateVertexBufferObjectsOfData();
+//        for (GLuint i = 0; i <= 2*_n; i++)
+//        {
+//            GLdouble u = i * step;
 
-        _mod = 3;
-        _div = 100;
-        _img_cc = _cc->GenerateImage(_mod, _div);
-        _img_cc->UpdateVertexBufferObjects();
+//            DCoordinate3 &cp = (*_cc)[i];
 
-        _num_of_pc = 6;
-        _pc.ResizeColumns(_num_of_pc);
+//            cp[0] = cos(u);
+//            cp[1] = sin(u);
+//            cp[2] = -2.0 + 4.0 * (GLdouble)rand() / RAND_MAX;
+//        }
+//        _cc->UpdateVertexBufferObjectsOfData();
 
-        RowMatrix<ParametricCurve3::Derivative> derivative(3);
+//        _mod = 3;
+//        _div = 100;
+//        _img_cc = _cc->GenerateImage(_mod, _div);
+//        _img_cc->UpdateVertexBufferObjects();
 
-        derivative(0) = spiral_on_cone::d0;
-        derivative(1) = spiral_on_cone::d1;
-        derivative(2) = spiral_on_cone::d2;
-        _pc[0] = new ParametricCurve3(derivative, spiral_on_cone::u_min, spiral_on_cone::u_max);
 
-        derivative(0) = spiral::d0;
-        derivative(1) = spiral::d1;
-        derivative(2) = spiral::d2;
-        _pc[1] = new ParametricCurve3(derivative, spiral::u_min, spiral::u_max);
-
-        derivative(0) = helix::d0;
-        derivative(1) = helix::d1;
-        derivative(2) = helix::d2;
-        _pc[2] = new ParametricCurve3(derivative, helix::u_min, helix::u_max);
-
-        derivative(0) = ellipse::d0;
-        derivative(1) = ellipse::d1;
-        derivative(2) = ellipse::d2;
-        _pc[3] = new ParametricCurve3(derivative, ellipse::u_min, ellipse::u_max);
-
-        derivative(0) = cyclo::d0;
-        derivative(1) = cyclo::d1;
-        derivative(2) = cyclo::d2;
-        _pc[4] = new ParametricCurve3(derivative, cyclo::u_min, cyclo::u_max);
-
-        derivative(0) = torus::d0;
-        derivative(1) = torus::d1;
-        derivative(2) = torus::d1;
-        _pc[5] = new ParametricCurve3(derivative, cyclo::u_min, cyclo::u_max);
-
+        init_parametric_curves();
         _image_of_pc.ResizeColumns(_num_of_pc);
 
         GLuint div_point_count = 500;
@@ -200,37 +169,37 @@ namespace cagd
             glTranslated(_trans_x, _trans_y, _trans_z);
             glScaled(_zoom, _zoom, _zoom);
 
-//            if (_image_of_pc[_index]) {
-//                glColor3f(1.0,1.0,1.0);
-//                _image_of_pc[_index]->RenderDerivatives(0, GL_LINE_STRIP);
+            if (_image_of_pc[_index]) {
+                glColor3f(1.0,1.0,1.0);
+                _image_of_pc[_index]->RenderDerivatives(0, GL_LINE_STRIP);
 
-//                glPointSize(5.0);
+                glPointSize(5.0);
 
-//                    glColor3f(0.0, 0.5, 0.0);
-//                    _image_of_pc[_index]->RenderDerivatives(1, GL_LINES);
-//                    _image_of_pc[_index]->RenderDerivatives(1, GL_POINTS);
+                    glColor3f(0.0, 0.5, 0.0);
+                    _image_of_pc[_index]->RenderDerivatives(1, GL_LINES);
+                    _image_of_pc[_index]->RenderDerivatives(1, GL_POINTS);
 
-//                    glColor3f(1.0, 0.5, 0.0);
-//                    _image_of_pc[_index]->RenderDerivatives(2, GL_LINES);
-//                    _image_of_pc[_index]->RenderDerivatives(2, GL_POINTS);
+                    glColor3f(1.0, 0.5, 0.0);
+                    _image_of_pc[_index]->RenderDerivatives(2, GL_LINES);
+                    _image_of_pc[_index]->RenderDerivatives(2, GL_POINTS);
 
-//                glPointSize(1.0);
+                glPointSize(1.0);
+            }
+
+//            if (_cc)
+//            {
+//                _cc->RenderData(GL_LINE_LOOP);
 //            }
 
-            if (_cc)
-            {
-                _cc->RenderData(GL_LINE_LOOP);
-            }
-
-            if (_img_cc)
-            {
-                glColor3f(1.0, 0.0, 0.0);
-                _img_cc->RenderDerivatives(0, GL_LINE_LOOP);
-                glColor3f(0.0, 0.5, 0.0);
-                _img_cc->RenderDerivatives(1, GL_LINES);
-                glColor3f(0.1, 0.5, 0.9);
-                _img_cc->RenderDerivatives(2, GL_LINES);
-            }
+//            if (_img_cc)
+//            {
+//                glColor3f(1.0, 0.0, 0.0);
+//                _img_cc->RenderDerivatives(0, GL_LINE_LOOP);
+//                glColor3f(0.0, 0.5, 0.0);
+//                _img_cc->RenderDerivatives(1, GL_LINES);
+//                glColor3f(0.1, 0.5, 0.9);
+//                _img_cc->RenderDerivatives(2, GL_LINES);
+//            }
 
         // pops the current matrix stack, replacing the current matrix with the one below it on the stack,
         // i.e., the original model view matrix is restored
@@ -335,4 +304,43 @@ namespace cagd
             updateGL();
         }
     }
+
+    // knim1445
+    void GLWidget::init_parametric_curves(){
+        _num_of_pc = 6;
+        _pc.ResizeColumns(_num_of_pc);
+
+        RowMatrix<ParametricCurve3::Derivative> derivative(3);
+
+        derivative(0) = spiral_on_cone::d0;
+        derivative(1) = spiral_on_cone::d1;
+        derivative(2) = spiral_on_cone::d2;
+        _pc[0] = new ParametricCurve3(derivative, spiral_on_cone::u_min, spiral_on_cone::u_max);
+
+        derivative(0) = spiral::d0;
+        derivative(1) = spiral::d1;
+        derivative(2) = spiral::d2;
+        _pc[1] = new ParametricCurve3(derivative, spiral::u_min, spiral::u_max);
+
+        derivative(0) = helix::d0;
+        derivative(1) = helix::d1;
+        derivative(2) = helix::d2;
+        _pc[2] = new ParametricCurve3(derivative, helix::u_min, helix::u_max);
+
+        derivative(0) = ellipse::d0;
+        derivative(1) = ellipse::d1;
+        derivative(2) = ellipse::d2;
+        _pc[3] = new ParametricCurve3(derivative, ellipse::u_min, ellipse::u_max);
+
+        derivative(0) = cyclo::d0;
+        derivative(1) = cyclo::d1;
+        derivative(2) = cyclo::d2;
+        _pc[4] = new ParametricCurve3(derivative, cyclo::u_min, cyclo::u_max);
+
+        derivative(0) = torus::d0;
+        derivative(1) = torus::d1;
+        derivative(2) = torus::d1;
+        _pc[5] = new ParametricCurve3(derivative, cyclo::u_min, cyclo::u_max);
+    }
+
 }

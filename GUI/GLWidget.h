@@ -69,5 +69,7 @@ namespace cagd
         void set_trans_z(double value);
 
         void set_parametric_curve_index(int index);
+        //knim1445
+        void init_parametric_curves();
     };
 }
