@@ -351,8 +351,8 @@ namespace cagd
         TriangularMatrix<ParametricSurface3::PartialDerivative> derivative(3);
 
         derivative(0) = torus_surface::d00;
-        derivative(1) = torus_surface::d01;
-        derivative(2) = torus_surface::d10;
+        derivative(1) = torus_surface::d10;
+        derivative(2) = torus_surface::d01;
         _ps[0] = new ParametricSurface3(derivative, torus_surface::u_min, torus_surface::u_max,torus_surface::v_min,torus_surface::v_max);
 
         _image_of_ps.ResizeColumns(_num_of_ps);
