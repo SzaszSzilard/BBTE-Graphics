@@ -57,7 +57,15 @@ HEADERS += \
     GUI/MainWindow.h \
     GUI/SideWidget.h \
     Parametric/ParametricCurves3.h \
-    Test/TestFunctions.h
+    Test/TestFunctions.h \
+    Parametric/ParametricSurfaces3.h \
+    Core/HCoordinates3.h \
+    Core/TCoordinates4.h \
+    Core/TriangularFaces.h \
+    Core/TriangulatedMeshes3.h \
+    Core/Colors4.h \
+    Core/Lights.h \
+    Core/Materials.h
 
 SOURCES += \
     Core/GenericCurves3.cpp \
@@ -69,7 +77,11 @@ SOURCES += \
     GUI/SideWidget.cpp \
     Parametric/ParametricCurves3.cpp \
     Test/TestFunctions.cpp \
-    main.cpp
+    main.cpp \
+    Parametric/ParametricSurfaces3.cpp \
+    Core/TriangulatedMeshes3.cpp \
+    Core/Lights.cpp \
+    Core/Materials.cpp
 
 FORMS += \
     GUI/MainWindow.ui \
