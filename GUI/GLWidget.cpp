@@ -82,8 +82,10 @@ namespace cagd
             }
 
             // create and store your geometry in display lists or vertex buffer objects
-            // ...
             _index = 0;
+            // knim1445
+            init_parametric_curves();
+            init_cyclic_curves();
         }
         catch (Exception &e)
         {
@@ -101,54 +103,7 @@ namespace cagd
 
         glEnable(GL_DEPTH_TEST);
 
-        glewInit();
-        // -------------- to the new world --------------
-
-
-
-//        _n  = 4;
-//        _cc = new CyclicCurve3(_n);
-
-//        GLdouble step = TWO_PI / (2 * _n + 1);
-
-//        for (GLuint i = 0; i <= 2*_n; i++)
-//        {
-//            GLdouble u = i * step;
-
-//            DCoordinate3 &cp = (*_cc)[i];
-
-//            cp[0] = cos(u);
-//            cp[1] = sin(u);
-//            cp[2] = -2.0 + 4.0 * (GLdouble)rand() / RAND_MAX;
-//        }
-//        _cc->UpdateVertexBufferObjectsOfData();
-
-//        _mod = 3;
-//        _div = 100;
-//        _img_cc = _cc->GenerateImage(_mod, _div);
-//        _img_cc->UpdateVertexBufferObjects();
-
-
-        init_parametric_curves();
-        _image_of_pc.ResizeColumns(_num_of_pc);
-
-        GLuint div_point_count = 500;
-        GLenum usage_flag = GL_STATIC_DRAW;
-        for (GLuint i = 0; i < _num_of_pc; i++) {
-            if (! _pc[i]) {
-                cout << "parametric curve wasnt initialized" << endl;
-            }
-
-            _image_of_pc[i] = _pc[i]->GenerateImage(div_point_count, usage_flag);
-
-            if (! _image_of_pc[i]) {
-                cout << "image of parametric curve wasnt initialized" << endl;
-            }
-
-            if (! _image_of_pc[i]->UpdateVertexBufferObjects(usage_flag)) {
-                cout << "Could not create the vertex buffer object of the parametrci curve" << endl;
-            }
-        }
+        glewInit();     
     }
 
     //-----------------------
@@ -169,37 +124,17 @@ namespace cagd
             glTranslated(_trans_x, _trans_y, _trans_z);
             glScaled(_zoom, _zoom, _zoom);
 
-            if (_image_of_pc[_index]) {
-                glColor3f(1.0,1.0,1.0);
-                _image_of_pc[_index]->RenderDerivatives(0, GL_LINE_STRIP);
-
-                glPointSize(5.0);
-
-                    glColor3f(0.0, 0.5, 0.0);
-                    _image_of_pc[_index]->RenderDerivatives(1, GL_LINES);
-                    _image_of_pc[_index]->RenderDerivatives(1, GL_POINTS);
-
-                    glColor3f(1.0, 0.5, 0.0);
-                    _image_of_pc[_index]->RenderDerivatives(2, GL_LINES);
-                    _image_of_pc[_index]->RenderDerivatives(2, GL_POINTS);
-
-                glPointSize(1.0);
+            switch (_page_index) {
+            case 1:
+                render_pc();
+                break;
+            case 2:
+                render_cc();
+                break;
+            default:
+                render_pc();
+                break;
             }
-
-//            if (_cc)
-//            {
-//                _cc->RenderData(GL_LINE_LOOP);
-//            }
-
-//            if (_img_cc)
-//            {
-//                glColor3f(1.0, 0.0, 0.0);
-//                _img_cc->RenderDerivatives(0, GL_LINE_LOOP);
-//                glColor3f(0.0, 0.5, 0.0);
-//                _img_cc->RenderDerivatives(1, GL_LINES);
-//                glColor3f(0.1, 0.5, 0.9);
-//                _img_cc->RenderDerivatives(2, GL_LINES);
-//            }
 
         // pops the current matrix stack, replacing the current matrix with the one below it on the stack,
         // i.e., the original model view matrix is restored
@@ -301,8 +236,15 @@ namespace cagd
         if (_index != index)
         {
             _index = index;
+            _page_index = 1;
             updateGL();
         }
+    }
+
+    void GLWidget::set_cyclic_curve_index()
+    {
+        _page_index = 2;
+        updateGL();
     }
 
     // knim1445
@@ -341,6 +283,86 @@ namespace cagd
         derivative(1) = torus::d1;
         derivative(2) = torus::d1;
         _pc[5] = new ParametricCurve3(derivative, cyclo::u_min, cyclo::u_max);
+
+        _image_of_pc.ResizeColumns(_num_of_pc);
+
+        GLuint div_point_count = 500;
+        GLenum usage_flag = GL_STATIC_DRAW;
+        for (GLuint i = 0; i < _num_of_pc; i++) {
+            if (! _pc[i]) {
+                cout << "parametric curve wasnt initialized" << endl;
+            }
+
+            _image_of_pc[i] = _pc[i]->GenerateImage(div_point_count, usage_flag);
+
+            if (! _image_of_pc[i]) {
+                cout << "image of parametric curve wasnt initialized" << endl;
+            }
+
+            if (! _image_of_pc[i]->UpdateVertexBufferObjects(usage_flag)) {
+                cout << "Could not create the vertex buffer object of the parametrci curve" << endl;
+            }
+        }
+    }
+
+    void GLWidget::init_cyclic_curves(){
+        _n  = 4;
+        _cc = new CyclicCurve3(_n);
+
+        GLdouble step = TWO_PI / (2 * _n + 1);
+
+        for (GLuint i = 0; i <= 2*_n; i++)
+        {
+            GLdouble u = i * step;
+
+            DCoordinate3 &cp = (*_cc)[i];
+
+            cp[0] = cos(u);
+            cp[1] = sin(u);
+            cp[2] = -2.0 + 4.0 * (GLdouble)rand() / RAND_MAX;
+        }
+        _cc->UpdateVertexBufferObjectsOfData();
+
+        _mod = 3;
+        _div = 100;
+        _img_cc = _cc->GenerateImage(_mod, _div);
+        _img_cc->UpdateVertexBufferObjects();
+    }
+
+    void GLWidget::render_pc(){
+        if (_image_of_pc[_index]) {
+            glColor3f(1.0,1.0,1.0);
+            _image_of_pc[_index]->RenderDerivatives(0, GL_LINE_STRIP);
+
+            glPointSize(5.0);
+
+                glColor3f(0.0, 0.5, 0.0);
+                _image_of_pc[_index]->RenderDerivatives(1, GL_LINES);
+                _image_of_pc[_index]->RenderDerivatives(1, GL_POINTS);
+
+                glColor3f(1.0, 0.5, 0.0);
+                _image_of_pc[_index]->RenderDerivatives(2, GL_LINES);
+                _image_of_pc[_index]->RenderDerivatives(2, GL_POINTS);
+
+            glPointSize(1.0);
+        }
+    }
+
+    void GLWidget::render_cc(){
+        if (_cc)
+        {
+            _cc->RenderData(GL_LINE_LOOP);
+        }
+
+        if (_img_cc)
+        {
+            glColor3f(1.0, 0.0, 0.0);
+            _img_cc->RenderDerivatives(0, GL_LINE_LOOP);
+            glColor3f(0.0, 0.5, 0.0);
+            _img_cc->RenderDerivatives(1, GL_LINES);
+            glColor3f(0.1, 0.5, 0.9);
+            _img_cc->RenderDerivatives(2, GL_LINES);
+        }
     }
 
 }

@@ -224,13 +224,13 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>270</y>
+     <y>260</y>
      <width>271</width>
      <height>261</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="page">
     <property name="geometry">
@@ -313,6 +313,35 @@
     <attribute name="label">
      <string>Cyclic curves</string>
     </attribute>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>81</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Cyclic curve</string>
+     </property>
+     <property name="buddy">
+      <cstring>pc_combo</cstring>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>0</y>
+       <width>111</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Show Cyclic curve</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="page_3">
     <property name="geometry">

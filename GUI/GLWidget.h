@@ -31,6 +31,8 @@ namespace cagd
 
         // your other declarations
         int         _index;
+        int         _cc_index;
+        int         _page_index;
 
         RowMatrix<ParametricCurve3*> _pc;
         RowMatrix<GenericCurve3*> _image_of_pc;
@@ -70,6 +72,10 @@ namespace cagd
 
         void set_parametric_curve_index(int index);
         //knim1445
+        void set_cyclic_curve_index();
         void init_parametric_curves();
+        void init_cyclic_curves();
+        void render_pc();
+        void render_cc();
     };
 }
