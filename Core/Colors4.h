@@ -25,17 +25,57 @@ namespace cagd
         }
 
         // homework: get components by value
-        GLfloat operator [](GLuint rhs) const;
-        GLfloat r() const;
-        GLfloat g() const;
-        GLfloat b() const;
-        GLfloat a() const;
+        GLfloat operator [](GLuint rhs) const
+        {
+            return _data[rhs];
+        }
+        GLfloat r() const
+        {
+            return _data[0];
+        }
+        GLfloat g() const
+        {
+            return _data[1];
+        }
+        GLfloat b() const
+        {
+            return _data[2];
+        }
+        GLfloat a() const
+        {
+            return _data[3];
+        }
 
         // homework: get components by reference
-        GLfloat& operator [](GLuint rhs);
-        GLfloat& r();
-        GLfloat& g();
-        GLfloat& b();
-        GLfloat& a();
+        GLfloat& operator [](GLuint rhs)
+        {
+            return _data[rhs];
+        }
+        GLfloat& r()
+        {
+            return _data[0];
+        }
+        GLfloat& g()
+        {
+            return _data[1];
+        }
+        GLfloat& b()
+        {
+            return _data[2];
+        }
+        GLfloat& a()
+        {
+            return _data[3];
+        }
+
+        Color4 operator =(const Color4 rhs)
+        {
+            _data[0] = rhs.r();
+            _data[1] = rhs.g();
+            _data[2] = rhs.b();
+            _data[3] = rhs.a();
+
+            return (*this);
+        }
     };
 }
