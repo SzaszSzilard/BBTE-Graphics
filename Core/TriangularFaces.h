@@ -77,6 +77,8 @@ namespace cagd
     inline std::istream& operator >>(std::istream& lhs, TriangularFace& rhs)
     {
         //lhs >> 3;
+        GLuint vertex_count;
+        lhs>>vertex_count;
         for (GLuint i = 0; i < 3; ++i)
             lhs  >> rhs[i];
         return lhs;

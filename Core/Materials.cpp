@@ -273,6 +273,25 @@ GLvoid Material::Apply()
     glMaterialf (GL_BACK, GL_SHININESS,  _back_shininess);
 }
 
+GLboolean Material::IsTransparent() const
+{
+        return (_front_ambient.a() < 1 || _front_diffuse.a() < 1 || _front_specular.a() < 1 || _front_emissive.a() < 1 || _back_ambient.a() < 1 || _back_diffuse.a() < 1 || _back_specular.a() < 1 || _back_emissive.a() < 1);
+}
+
+GLvoid Material::SetTransparency(GLfloat alpha)
+{
+        _front_ambient[3] = alpha;
+        _front_diffuse[3] = alpha;
+        _front_specular[3] = alpha;
+        _front_emissive[3] = alpha;
+
+        _back_ambient[3] = alpha;
+        _back_diffuse[3] = alpha;
+        _back_specular[3] = alpha;
+        _back_emissive[3] = alpha;
+
+}
+
 // brass
 Material cagd::MatFBBrass = Material(
                         Color4(0.329412f, 0.223529f, 0.027451f, 0.4f),

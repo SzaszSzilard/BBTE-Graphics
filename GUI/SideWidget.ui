@@ -230,7 +230,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="page">
     <property name="geometry">
@@ -355,8 +355,57 @@
     <attribute name="label">
      <string>Models</string>
     </attribute>
+    <widget class="QLabel" name="label_11">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>101</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Model</string>
+     </property>
+     <property name="buddy">
+      <cstring>pc_combo</cstring>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="mo_combo">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>0</y>
+       <width>161</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>Mouse</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Elephant</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Sphere</string>
+      </property>
+     </item>
+    </widget>
    </widget>
    <widget class="QWidget" name="page_4">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>271</width>
+      <height>153</height>
+     </rect>
+    </property>
     <attribute name="label">
      <string>Parametric surfaces</string>
     </attribute>

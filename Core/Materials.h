@@ -46,12 +46,12 @@ namespace cagd
         GLvoid SetShininess(GLenum face, GLfloat shininess);
 
         // homework
-        //GLvoid SetTransparency(GLfloat alpha);
+        GLvoid SetTransparency(GLfloat alpha);
 
         GLvoid Apply();
 
         // homework
-        //GLboolean IsTransparent() const;
+        GLboolean IsTransparent() const;
     };
 
 

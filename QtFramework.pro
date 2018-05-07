@@ -65,7 +65,9 @@ HEADERS += \
     Core/TriangulatedMeshes3.h \
     Core/Colors4.h \
     Core/Lights.h \
-    Core/Materials.h
+    Core/Materials.h \
+    Core/TensorProductSurfaces3.h \
+    Core/ShaderPrograms.h
 
 SOURCES += \
     Core/GenericCurves3.cpp \
@@ -81,7 +83,9 @@ SOURCES += \
     Parametric/ParametricSurfaces3.cpp \
     Core/TriangulatedMeshes3.cpp \
     Core/Lights.cpp \
-    Core/Materials.cpp
+    Core/Materials.cpp \
+    Core/TensorProductSurfaces3.cpp \
+    Core/ShaderPrograms.cpp
 
 FORMS += \
     GUI/MainWindow.ui \

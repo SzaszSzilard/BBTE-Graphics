@@ -32,7 +32,7 @@ namespace cagd
 
         // your other declarations
         int         _index, _cc_index,_page_index;
-        int         _ps_index;
+        int         _ps_index, _mo_index;
 
         // variables needed by parametric curves
         RowMatrix<ParametricCurve3*> _pc;
@@ -41,7 +41,6 @@ namespace cagd
 
         // variables needed by parametric surfaces
         RowMatrix<ParametricSurface3*> _ps;
-        //RowMatrix<GenericCurve3*> _image_of_ps;
         RowMatrix<TriangulatedMesh3*> _image_of_ps;
         GLuint _num_of_ps;
 
@@ -49,6 +48,11 @@ namespace cagd
         GLuint _n;              // num of cyclic curve poits
         CyclicCurve3* _cc;
         GenericCurve3 *_img_cc;
+
+        // varibles needed by models;
+        RowMatrix<TriangulatedMesh3*> _image_of_mo;
+        GLuint _num_of_mo;
+
         GLuint _mod;
         GLuint _div;
 
@@ -80,14 +84,16 @@ namespace cagd
         void set_trans_z(double value);
 
         void set_parametric_curve_index(int index);
-        //knim1445
         void set_cyclic_curve_index();
         void set_parametric_surface_index(int index);
+        void set_models_index(int index);
         void init_parametric_curves();
         void init_cyclic_curves();
         void init_parametric_surfaces();
+        void init_models();
         void render_pc();
         void render_cc();
         void render_ps();
+        void render_mo();
     };
 }

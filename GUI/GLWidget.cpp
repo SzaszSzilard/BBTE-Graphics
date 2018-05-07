@@ -6,6 +6,8 @@
 #include "../Core/Constants.h"
 #include "../Core/Matrices.h"
 #include "../Test/TestFunctions.h"
+#include "../Core/Lights.h"
+#include "../Core/Materials.h"
 
 using namespace std;
 namespace cagd
@@ -87,7 +89,16 @@ namespace cagd
             init_parametric_curves();
             init_cyclic_curves();
             init_parametric_surfaces();
+            init_models();
 
+            //shaders homework
+            /*if (!_shadersInstallShaders("Shaders/reflection_lines.vert",
+                          "Shaders_refelction_lines.frag",GL_TRE))
+                        throw Exception();
+                         _shader.Enable();
+                         _shader.setUniformVariable1f("scale_factor",4.0f);
+                         _shader.setUniformVariable1f("smoothing",2.0f);
+                         _shader.setUniformVariable1f("shading",1.0f);*/
         }
         catch (Exception &e)
         {
@@ -132,6 +143,9 @@ namespace cagd
                 break;
             case 2:
                 render_cc();
+                break;
+            case 3:
+                render_mo();
                 break;
             case 4:
                 render_ps();
@@ -252,6 +266,15 @@ namespace cagd
         updateGL();
     }
 
+    void GLWidget::set_models_index(int index){
+        if (_mo_index != index)
+        {
+            _mo_index = index;
+            _page_index = 3;
+            updateGL();
+        }
+    }
+
     void GLWidget::set_parametric_surface_index(int index)
     {
         if (_ps_index != index)
@@ -349,33 +372,66 @@ namespace cagd
         _num_of_ps = 5;
         _ps.ResizeColumns(_num_of_ps);
 
-        TriangularMatrix<ParametricSurface3::PartialDerivative> pderivative(3);
+        TriangularMatrix<ParametricSurface3::PartialDerivative> pderivative(4);
 
         pderivative(0,0) = torus_surface::d00;
         pderivative(1,0) = torus_surface::d10;
-        pderivative(0,1) = torus_surface::d01;
+        pderivative(1,1) = torus_surface::d01;
         _ps[0] = new ParametricSurface3(pderivative, torus_surface::u_min, torus_surface::u_max,torus_surface::v_min,torus_surface::v_max);
 
-        _image_of_ps.ResizeColumns(_num_of_ps);
+        pderivative(0,0) = alfred_klein_bottle::d00;
+        pderivative(1,0) = alfred_klein_bottle::d10;
+        pderivative(1,1) = alfred_klein_bottle::d01;
+        _ps[1] = new ParametricSurface3(pderivative, alfred_klein_bottle::u_min, alfred_klein_bottle::u_max,alfred_klein_bottle::v_min,alfred_klein_bottle::v_max);
+
+        pderivative(0,0) = cylindrical_helicoid::d00;
+        pderivative(1,0) = cylindrical_helicoid::d10;
+        pderivative(1,1) = cylindrical_helicoid::d01;
+        _ps[2] = new ParametricSurface3(pderivative, cylindrical_helicoid::u_min, cylindrical_helicoid::u_max,cylindrical_helicoid::v_min,cylindrical_helicoid::v_max);
+
+        pderivative(0,0) = hyperboloid::d00;
+        pderivative(1,0) = hyperboloid::d10;
+        pderivative(1,1) = hyperboloid::d01;
+        _ps[3] = new ParametricSurface3(pderivative, hyperboloid::u_min, hyperboloid::u_max,hyperboloid::v_min,hyperboloid::v_max);
+
+        pderivative(0,0) = sphere::d00;
+        pderivative(1,0) = sphere::d10;
+        pderivative(1,1) = sphere::d01;
+        _ps[4] = new ParametricSurface3(pderivative, sphere::u_min, sphere::u_max,sphere::v_min,sphere::v_max);
+
+         _image_of_ps.ResizeColumns(_num_of_ps);
 
         GLuint div_point_count = 500;
         GLuint v_point_count = 500;
         GLenum usage_flag = GL_STATIC_DRAW;
+
         for (GLuint i = 0; i < _num_of_ps; i++) {
             if (! _ps[i]) {
-                cout << "parametric curve wasnt initialized" << endl;
+                cout << "parametric surface wasnt initialized" << endl;
             }
 
             _image_of_ps[i] = _ps[i]->GenerateImage(div_point_count,v_point_count,usage_flag);
 
             if (! _image_of_ps[i]) {
-                cout << "image of parametric curve wasnt initialized" << endl;
+                cout << "image of parametric surface wasnt initialized" << endl;
             }
 
             if (! _image_of_ps[i]->UpdateVertexBufferObjects(usage_flag)) {
-                cout << "Could not create the vertex buffer object of the parametrci curve" << endl;
+                cout << "Could not create the vertex buffer object of the parametrci surface" << endl;
             }
         }
+    }
+
+    void GLWidget::init_models(){
+        _num_of_mo = 3;
+        _image_of_mo.ResizeColumns(_num_of_mo);
+
+        _image_of_mo[0] = new TriangulatedMesh3();
+        _image_of_mo[0]->LoadFromOFF("Models/mouse.off",true);
+        _image_of_mo[1] = new TriangulatedMesh3();
+        _image_of_mo[1]->LoadFromOFF("Models/elephant.off",true);
+        _image_of_mo[2] = new TriangulatedMesh3();
+        _image_of_mo[2]->LoadFromOFF("Models/sphere.off",true);
     }
 
     void GLWidget::render_pc(){
@@ -385,13 +441,13 @@ namespace cagd
 
             glPointSize(5.0);
 
-                glColor3f(0.0, 0.5, 0.0);
-                _image_of_pc[_index]->RenderDerivatives(1, GL_LINES);
-                _image_of_pc[_index]->RenderDerivatives(1, GL_POINTS);
+            glColor3f(0.0, 0.5, 0.0);
+            _image_of_pc[_index]->RenderDerivatives(1, GL_LINES);
+            _image_of_pc[_index]->RenderDerivatives(1, GL_POINTS);
 
-                glColor3f(1.0, 0.5, 0.0);
-                _image_of_pc[_index]->RenderDerivatives(2, GL_LINES);
-                _image_of_pc[_index]->RenderDerivatives(2, GL_POINTS);
+            glColor3f(1.0, 0.5, 0.0);
+            _image_of_pc[_index]->RenderDerivatives(2, GL_LINES);
+            _image_of_pc[_index]->RenderDerivatives(2, GL_POINTS);
 
             glPointSize(1.0);
         }
@@ -399,23 +455,25 @@ namespace cagd
 
     void GLWidget::render_ps(){
         if (_image_of_ps[_ps_index]) {
-            _image_of_ps[_ps_index]->Render();
-            /*
-            glColor3f(1.0,1.0,1.0);
-            _image_of_ps[_ps_index]->RenderDerivatives(0, GL_LINE_STRIP);
+            glEnable(GL_LIGHTING);
+            glEnable(GL_NORMALIZE);
 
-            glPointSize(5.0);
+            DirectionalLight *dl = 0;
+            HCoordinate3 direction(0.0, 0.0, 1.0, 0.0);
+            Color4 ambient(0.4, 0.4, 0.4, 1.0);
+            Color4 diffuse(0.8, 0.8, 0.8, 1.0);
+            Color4 specular(1.0, 1.0, 1.0, 1.0);
 
-                glColor3f(0.0, 0.5, 0.0);
-                _image_of_ps[_ps_index]->RenderDerivatives(1, GL_LINES);
-                _image_of_ps[_ps_index]->RenderDerivatives(1, GL_POINTS);
-
-                glColor3f(1.0, 0.5, 0.0);
-                _image_of_ps[_ps_index]->RenderDerivatives(2, GL_LINES);
-                _image_of_ps[_ps_index]->RenderDerivatives(2, GL_POINTS);
-
-            glPointSize(1.0);
-            */
+            dl = new DirectionalLight(GL_LIGHT0,direction,ambient,diffuse,specular);
+            if(dl)
+            {
+                dl->Enable();
+                MatFBRuby.Apply();
+                _image_of_ps[_ps_index]->Render();
+                dl->Disable();
+            }
+            glDisable(GL_LIGHTING);
+            glDisable(GL_NORMALIZE);
         }
     }
 
@@ -434,6 +492,31 @@ namespace cagd
             glColor3f(0.1, 0.5, 0.9);
             _img_cc->RenderDerivatives(2, GL_LINES);
         }
+    }
+
+    void GLWidget::render_mo(){
+         if (_image_of_mo[_mo_index]) {
+             glEnable(GL_LIGHTING);
+             glEnable(GL_NORMALIZE);
+
+             DirectionalLight *dl = 0;
+             HCoordinate3 direction(0.0, 0.0, 1.0, 0.0);
+             Color4 ambient(0.4, 0.4, 0.4, 1.0);
+             Color4 diffuse(0.8, 0.8, 0.8, 1.0);
+             Color4 specular(1.0, 1.0, 1.0, 1.0);
+
+             dl = new DirectionalLight(GL_LIGHT0,direction,ambient,diffuse,specular);
+             if(dl)
+             {
+                 dl->Enable();
+                 MatFBRuby.Apply();
+                 _image_of_mo[_mo_index]->Render();
+                 _image_of_mo[_mo_index]->UpdateVertexBufferObjects(GL_DYNAMIC_DRAW);
+                 dl->Disable();
+             }
+             glDisable(GL_LIGHTING);
+             glDisable(GL_NORMALIZE);
+         }
     }
 
 }
