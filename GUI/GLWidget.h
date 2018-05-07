@@ -51,6 +51,8 @@ namespace cagd
         GLuint _div;
         GenericCurve3 *_img_cc;
 
+        //ShaderProgram _shader;
+
 
     public:
         // special and default constructor

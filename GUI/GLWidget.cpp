@@ -87,6 +87,15 @@ namespace cagd
             init_parametric_curves();
             init_cyclic_curves();
             init_parametric_surfaces();
+            /*if (!_shadersInstallShaders("Shaders/reflection_lines.vert",
+                "Shaders_refelction_lines.frag",GL_TRE))
+              throw Exception();
+               _shader.Enable();
+               _shader.setUniformVariable1f("scale_factor",4.0f);
+               _shader.setUniformVariable1f("smoothing",2.0f);
+               _shader.setUniformVariable1f("shading",1.0f);*/
+
+
         }
         catch (Exception &e)
         {
