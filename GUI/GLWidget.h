@@ -41,15 +41,16 @@ namespace cagd
 
         // variables needed by parametric surfaces
         RowMatrix<ParametricSurface3*> _ps;
-        RowMatrix<GenericCurve3*> _image_of_ps;
+        //RowMatrix<GenericCurve3*> _image_of_ps;
+        RowMatrix<TriangulatedMesh3*> _image_of_ps;
         GLuint _num_of_ps;
 
-        GLuint _n;
+        // CyclicCurve variables
+        GLuint _n;              // num of cyclic curve poits
         CyclicCurve3* _cc;
-
+        GenericCurve3 *_img_cc;
         GLuint _mod;
         GLuint _div;
-        GenericCurve3 *_img_cc;
 
         //ShaderProgram _shader;
 

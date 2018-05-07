@@ -42,6 +42,61 @@ namespace cagd
         _data[3] = 1.0;
     }
 
+    // homework: special constructor
+    inline TCoordinate4::TCoordinate4(GLfloat s, GLfloat t, GLfloat r, GLfloat q)
+    {
+        _data[0] = s;
+        _data[1] = t;
+        _data[2] = r;
+        _data[3] = q;
+    }
+
+    inline GLfloat TCoordinate4::operator[](GLuint rhs) const
+    {
+        return _data[rhs];
+    }
+
+    inline GLfloat& TCoordinate4::operator[](GLuint rhs)
+    {
+        return _data[rhs];
+    }
+
+    // homework: get components by value
+    inline GLfloat TCoordinate4::s() const
+    {
+        return _data[0];
+    }
+    inline GLfloat TCoordinate4::t() const
+    {
+        return _data[1];
+    }
+    inline GLfloat TCoordinate4::r() const
+    {
+        return _data[2];
+    }
+    inline GLfloat TCoordinate4::q() const
+    {
+        return _data[3];
+    }
+
+    // homework: get components by reference
+    inline GLfloat& TCoordinate4::s()
+    {
+        return _data[0];
+    }
+    inline GLfloat& TCoordinate4::t()
+    {
+        return _data[1];
+    }
+    inline GLfloat& TCoordinate4::r()
+    {
+        return _data[2];
+    }
+    inline GLfloat& TCoordinate4::q()
+    {
+        return _data[3];
+    }
+
     // homework: output to stream
     inline std::ostream& operator <<(std::ostream& lhs, const TCoordinate4& rhs)
     {
@@ -49,5 +104,8 @@ namespace cagd
     }
 
     // homework: input from stream
-    inline std::istream& operator >>(std::istream& lhs, TCoordinate4& rhs);
+    inline std::istream& operator >>(std::istream& lhs, TCoordinate4& rhs)
+    {
+        return lhs >> rhs.s() >> rhs.t() >> rhs.r() >> rhs.q();
+    }
 }

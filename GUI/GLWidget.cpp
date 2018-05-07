@@ -87,14 +87,6 @@ namespace cagd
             init_parametric_curves();
             init_cyclic_curves();
             init_parametric_surfaces();
-            /*if (!_shadersInstallShaders("Shaders/reflection_lines.vert",
-                "Shaders_refelction_lines.frag",GL_TRE))
-              throw Exception();
-               _shader.Enable();
-               _shader.setUniformVariable1f("scale_factor",4.0f);
-               _shader.setUniformVariable1f("smoothing",2.0f);
-               _shader.setUniformVariable1f("shading",1.0f);*/
-
 
         }
         catch (Exception &e)
@@ -357,12 +349,12 @@ namespace cagd
         _num_of_ps = 5;
         _ps.ResizeColumns(_num_of_ps);
 
-        TriangularMatrix<ParametricSurface3::PartialDerivative> derivative(3);
+        TriangularMatrix<ParametricSurface3::PartialDerivative> pderivative(3);
 
-        derivative(0) = torus_surface::d00;
-        derivative(1) = torus_surface::d10;
-        derivative(2) = torus_surface::d01;
-        _ps[0] = new ParametricSurface3(derivative, torus_surface::u_min, torus_surface::u_max,torus_surface::v_min,torus_surface::v_max);
+        pderivative(0,0) = torus_surface::d00;
+        pderivative(1,0) = torus_surface::d10;
+        pderivative(0,1) = torus_surface::d01;
+        _ps[0] = new ParametricSurface3(pderivative, torus_surface::u_min, torus_surface::u_max,torus_surface::v_min,torus_surface::v_max);
 
         _image_of_ps.ResizeColumns(_num_of_ps);
 
@@ -407,6 +399,8 @@ namespace cagd
 
     void GLWidget::render_ps(){
         if (_image_of_ps[_ps_index]) {
+            _image_of_ps[_ps_index]->Render();
+            /*
             glColor3f(1.0,1.0,1.0);
             _image_of_ps[_ps_index]->RenderDerivatives(0, GL_LINE_STRIP);
 
@@ -421,6 +415,7 @@ namespace cagd
                 _image_of_ps[_ps_index]->RenderDerivatives(2, GL_POINTS);
 
             glPointSize(1.0);
+            */
         }
     }
 

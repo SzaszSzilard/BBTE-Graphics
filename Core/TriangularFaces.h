@@ -34,6 +34,36 @@ namespace cagd
         _node[0] = _node[1] = _node[2] = 0;
     }
 
+    // homework: copy constructor
+    inline TriangularFace::TriangularFace(const TriangularFace& face)
+    {
+        _node[0] = face._node[0];
+        _node[1] = face._node[1];
+        _node[2] = face._node[2];
+    }
+
+    // homework: assignment operator
+    inline TriangularFace& TriangularFace::operator =(const TriangularFace& rhs)
+    {
+        _node[0] = rhs._node[0];
+        _node[1] = rhs._node[1];
+        _node[2] = rhs._node[2];
+
+        return (*this);
+    }
+
+    // homework: get node identifiers by value
+    inline GLuint TriangularFace::operator [](GLuint i) const
+    {
+        return _node[i];
+    }
+
+    // homework: get node identifiers by reference
+    inline GLuint& TriangularFace::operator [](GLuint i)
+    {
+        return _node[i];
+    }
+
     // output to stream
     inline std::ostream& operator <<(std::ostream& lhs, const TriangularFace& rhs)
     {
@@ -44,5 +74,11 @@ namespace cagd
     }
 
     // homework
-    inline std::istream& operator >>(std::istream& lhs, TriangularFace& rhs);
+    inline std::istream& operator >>(std::istream& lhs, TriangularFace& rhs)
+    {
+        //lhs >> 3;
+        for (GLuint i = 0; i < 3; ++i)
+            lhs  >> rhs[i];
+        return lhs;
+    }
 }
