@@ -432,8 +432,6 @@ namespace cagd
         _image_of_mo[1]->LoadFromOFF("Models/elephant.off",true);
         _image_of_mo[2] = new TriangulatedMesh3();
         _image_of_mo[2]->LoadFromOFF("Models/sphere.off",true);
-        _image_of_mo[3] = new TriangulatedMesh3();
-        _image_of_mo[3]->LoadFromOFF("Models/heart.off",true);
     }
 
     void GLWidget::render_pc(){
