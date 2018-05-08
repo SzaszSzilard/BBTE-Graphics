@@ -424,7 +424,7 @@ namespace cagd
     }
 
     void GLWidget::init_models(){
-        _num_of_mo = 3;
+        _num_of_mo = 4;
         _image_of_mo.ResizeColumns(_num_of_mo);
 
         _image_of_mo[0] = new TriangulatedMesh3();
