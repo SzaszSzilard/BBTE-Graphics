@@ -511,8 +511,8 @@ namespace cagd
              {
                  dl->Enable();
                  MatFBRuby.Apply();
-                 _image_of_mo[_mo_index]->Render();
                  _image_of_mo[_mo_index]->UpdateVertexBufferObjects(GL_DYNAMIC_DRAW);
+                 _image_of_mo[_mo_index]->Render();
                  dl->Disable();
              }
              glDisable(GL_LIGHTING);
