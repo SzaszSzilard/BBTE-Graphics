@@ -395,6 +395,11 @@
        <string>Sphere</string>
       </property>
      </item>
+     <item>
+      <property name="text">
+       <string>Heart</string>
+      </property>
+     </item>
     </widget>
    </widget>
    <widget class="QWidget" name="page_4">

@@ -423,7 +423,7 @@ namespace cagd
     }
 
     void GLWidget::init_models(){
-        _num_of_mo = 3;
+        _num_of_mo = 4;
         _image_of_mo.ResizeColumns(_num_of_mo);
 
         _image_of_mo[0] = new TriangulatedMesh3();
@@ -432,6 +432,8 @@ namespace cagd
         _image_of_mo[1]->LoadFromOFF("Models/elephant.off",true);
         _image_of_mo[2] = new TriangulatedMesh3();
         _image_of_mo[2]->LoadFromOFF("Models/sphere.off",true);
+        _image_of_mo[3] = new TriangulatedMesh3();
+        _image_of_mo[3]->LoadFromOFF("Models/heart.off",true);
     }
 
     void GLWidget::render_pc(){
