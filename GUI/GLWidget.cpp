@@ -85,6 +85,7 @@ namespace cagd
 
             // create and store your geometry in display lists or vertex buffer objects
             _index = 0;
+            _page_index = 0;
             // knim1445
             init_parametric_curves();
             init_cyclic_curves();
