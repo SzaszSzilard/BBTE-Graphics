@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <QGLWidget>
 #include <QGLFormat>
+#include <QTimer>
 
 #include "../Parametric/ParametricCurves3.h"
 #include "../Parametric/ParametricSurfaces3.h"
@@ -22,29 +23,29 @@ namespace cagd
         float       _fovy;              // field of view in direction y
         float       _z_near, _z_far;    // distance of near and far clipping planes
 
-        // variables defining the model-view matrix
+        // variables defining the model-view matrix;
         float       _eye[3], _center[3], _up[3];
 
-        // variables needed by transformations
+        // variables needed by transformations;
         int         _angle_x, _angle_y, _angle_z;
         double      _zoom;
         double      _trans_x, _trans_y, _trans_z;
 
-        // your other declarations
+        // your other declarations;
         int         _index, _cc_index,_page_index;
         int         _ps_index, _mo_index;
 
-        // variables needed by parametric curves
+        // variables needed by parametric curves;
         RowMatrix<ParametricCurve3*> _pc;
         RowMatrix<GenericCurve3*> _image_of_pc;
         GLuint _num_of_pc;
 
-        // variables needed by parametric surfaces
+        // variables needed by parametric surfaces;
         RowMatrix<ParametricSurface3*> _ps;
         RowMatrix<TriangulatedMesh3*> _image_of_ps;
         GLuint _num_of_ps;
 
-        // CyclicCurve variables
+        // CyclicCurve variables;
         GLuint _n;              // num of cyclic curve poits
         CyclicCurve3* _cc;
         GenericCurve3 *_img_cc;
@@ -56,7 +57,11 @@ namespace cagd
         GLuint _mod;
         GLuint _div;
 
-        //ShaderProgram _shader;
+        // dynamic vertex buffers;
+        QTimer* _timer;
+        GLfloat _angle;
+
+        // ShaderProgram _shader;
 
 
     public:
@@ -95,5 +100,7 @@ namespace cagd
         void render_cc();
         void render_ps();
         void render_mo();
+
+        void _animate();
     };
 }

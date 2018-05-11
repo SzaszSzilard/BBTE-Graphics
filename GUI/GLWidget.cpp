@@ -17,6 +17,12 @@ namespace cagd
     //--------------------------------
     GLWidget::GLWidget(QWidget *parent, const QGLFormat &format): QGLWidget(format, parent)
     {
+        _timer = new QTimer(this);
+        _timer->setInterval(0);
+
+        connect(_timer, SIGNAL(timeout()), this, SLOT(_animate()));
+
+        _angle = 0.1;
     }
 
     GLWidget::~GLWidget() {
@@ -424,7 +430,7 @@ namespace cagd
     }
 
     void GLWidget::init_models(){
-        _num_of_mo = 4;
+        _num_of_mo = 3;
         _image_of_mo.ResizeColumns(_num_of_mo);
 
         _image_of_mo[0] = new TriangulatedMesh3();
@@ -511,13 +517,46 @@ namespace cagd
              {
                  dl->Enable();
                  MatFBRuby.Apply();
-                 _image_of_mo[_mo_index]->UpdateVertexBufferObjects(GL_DYNAMIC_DRAW);
+
+                 if (_image_of_mo[_mo_index]->UpdateVertexBufferObjects(GL_DYNAMIC_DRAW))
+                 {
+                    _angle = 0.0;
+                    _timer->start();
+                 } else {
+                     cout << "Couldn't initialize the model" << endl;
+                     //for (int i = 0; i<_num_of_mo; ++i)
+                     //    delete _image_of_mo[i];
+                     exit(0);
+                 }
+
                  _image_of_mo[_mo_index]->Render();
                  dl->Disable();
              }
              glDisable(GL_LIGHTING);
              glDisable(GL_NORMALIZE);
          }
+    }
+
+    void  GLWidget::_animate()
+    {
+        GLfloat* vertex = _image_of_mo[_mo_index]->MapVertexBuffer(GL_READ_WRITE);
+        GLfloat* normal = _image_of_mo[_mo_index]->MapNormalBuffer(GL_READ_ONLY);
+
+        _angle += DEG_TO_RADIAN;
+        if (_angle >= TWO_PI)
+            _angle -= TWO_PI;
+
+        GLfloat scale = sin(_angle) / 3000.0;
+        for (GLuint i = 0; i < _image_of_mo[_mo_index]->VertexCount(); ++i)
+        {
+            for (GLuint coordinate = 0; coordinate < 3; ++coordinate, ++vertex, ++normal)
+                *vertex += scale * (*normal);
+        }
+
+        _image_of_mo[_mo_index]->UnmapNormalBuffer();
+        _image_of_mo[_mo_index]->UnmapVertexBuffer();
+
+        updateGL();
     }
 
 }

@@ -359,6 +359,55 @@ GLvoid TriangulatedMesh3::UnmapVertexBuffer() const
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+GLfloat* TriangulatedMesh3::MapNormalBuffer(GLenum access_flag) const
+{
+    if (access_flag != GL_READ_ONLY && access_flag != GL_WRITE_ONLY && access_flag != GL_READ_WRITE)
+        return (GLfloat*)0;
+
+    glBindBuffer(GL_ARRAY_BUFFER, _vbo_normals);
+    GLfloat* result = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, access_flag);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    return result;
+}
+
+GLvoid TriangulatedMesh3::UnmapNormalBuffer() const
+{
+    glBindBuffer(GL_ARRAY_BUFFER, _vbo_normals);
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+GLfloat* TriangulatedMesh3::MapTextureBuffer(GLenum access_flag) const
+{
+    if (access_flag != GL_READ_ONLY && access_flag != GL_WRITE_ONLY && access_flag != GL_READ_WRITE)
+        return (GLfloat*)0;
+
+    glBindBuffer(GL_ARRAY_BUFFER, _vbo_tex_coordinates);
+    GLfloat* result = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, access_flag);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    return result;
+}
+
+GLvoid TriangulatedMesh3::UnmapTextureBuffer() const
+{
+    glBindBuffer(GL_ARRAY_BUFFER, _vbo_tex_coordinates);
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+
+GLuint TriangulatedMesh3::VertexCount() const // homework
+{
+    return _vertex.size();
+}
+
+GLuint TriangulatedMesh3::FaceCount() const   // homework
+{
+    return _face.size();
+}
+
 TriangulatedMesh3::~TriangulatedMesh3()
 {
     DeleteVertexBufferObjects();
