@@ -46,6 +46,10 @@ namespace cagd
         GLboolean SetUniformVariable2f(const GLchar *name, GLfloat parameter_1, GLfloat parameter_2) const;
         GLboolean SetUniformVariable3f(const GLchar *name, GLfloat parameter_1, GLfloat parameter_2, GLfloat parameter_3) const;
         // homework: declare and define the remained uniform variable handling methods
+        GLboolean SetUniformVariable4f(const GLchar *name, GLfloat parameter_1, GLfloat parameter_2, GLfloat parameter_3, GLfloat parameter_4) const;
+        GLboolean SetUniformVariable2i(const GLchar *name, GLint parameter_1, GLint parameter_2) const;
+        GLboolean SetUniformVariable3i(const GLchar *name, GLint parameter_1, GLint parameter_2, GLint parameter_3) const;
+        GLboolean SetUniformVariable4i(const GLchar *name, GLint parameter_1, GLint parameter_2, GLint parameter_3, GLint parameter_4) const;
 
         GLint GetUniformVariableLocation(const GLchar *name, GLboolean logging_is_enabled = GL_FALSE, std::ostream& output = std::cout) const;
 
