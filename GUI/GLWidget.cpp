@@ -97,17 +97,6 @@ namespace cagd
             init_cyclic_curves();
             init_parametric_surfaces();
             init_models();
-
-            //shaders homework
-            if (_shader.InstallShaders("Shaders/reflection_lines.vert",
-                          "Shaders/refelction_lines.frag",GL_TRUE))
-            {
-                         _shader.Enable();
-                         _shader.SetUniformVariable1f("scale_factor",_scale_factor);
-                         _shader.SetUniformVariable1f("smoothing",_smoothing);
-                         _shader.SetUniformVariable1f("shading",_shading);
-                         //_shader.Disable();
-            }
         }
         catch (Exception &e)
         {
@@ -148,18 +137,22 @@ namespace cagd
 
             switch (_page_index) {
             case 1:
+                _shader.Disable();
                 render_pc();
                 break;
             case 2:
+                _shader.Disable();
                 render_cc();
                 break;
             case 3:
                 render_mo();
                 break;
             case 4:
+                _shader.Disable();
                 render_ps();
                 break;
             default:
+                _shader.Disable();
                 render_pc();
                 break;
             }
@@ -565,19 +558,72 @@ namespace cagd
 
     void GLWidget::set_shader_scale_factor(double value)
     {
-        _scale_factor = value;
-        _shader.SetUniformVariable1f("scale_factor",_scale_factor);
+        if (_shader_index == 3){
+            _scale_factor = value;
+            _shader.SetUniformVariable1f("scale_factor",_scale_factor);
+            updateGL();
+        }
     }
 
     void GLWidget::set_shader_smoothing(double value)
     {
-        _smoothing = value;
-        _shader.SetUniformVariable1f("smoothing",_smoothing);
+        if (_shader_index == 3){
+            _smoothing = value;
+            _shader.SetUniformVariable1f("smoothing",_smoothing);
+            updateGL();
+        }
     }
 
     void GLWidget::set_shader_shading(double value)
     {
-        _shading = value;
-        _shader.SetUniformVariable1f("shading",_shading);
+        if (_shader_index == 3){
+            _shading = value;
+            _shader.SetUniformVariable1f("shading",_shading);
+            updateGL();
+        }
+    }
+
+    void GLWidget::set_shader_index(int index)
+    {
+        if (_shader_index != index)
+        {
+            _shader_index = index;
+            init_shader(_shader_index);
+            updateGL();
+        }
+    }
+
+    void GLWidget::init_shader(int index)
+    {
+        if (_page_index == 3){
+            switch (index) {
+            case 0:
+                _shader.InstallShaders("Shaders/directional_light.vert",
+                                       "Shaders/directional_light.frag",GL_TRUE);
+                break;
+            case 1:
+                _shader.InstallShaders("Shaders/two_sided_lighting.vert",
+                                       "Shaders/two_sided_lighting.frag",GL_TRUE);
+                break;
+            case 2:
+                _shader.InstallShaders("Shaders/toon.vert",
+                                       "Shaders/toon.frag",GL_TRUE);
+                break;
+            case 3:
+                _shader.InstallShaders("Shaders/reflection_lines.vert",
+                                       "Shaders/reflection_lines.frag",GL_TRUE);
+                break;
+            default:
+                break;
+            }
+
+            _shader.Enable();
+            _shader.SetUniformVariable1f("scale_factor",_scale_factor);
+            _shader.SetUniformVariable1f("smoothing",_smoothing);
+            _shader.SetUniformVariable1f("shading",_shading);
+        }
+        else {
+            _shader.Disable();
+        }
     }
 }

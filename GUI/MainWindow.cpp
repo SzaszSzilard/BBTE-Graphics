@@ -59,6 +59,7 @@ namespace cagd
         connect(_side_widget->SpinBoxScale,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_shader_scale_factor(double)));
         connect(_side_widget->SpinBoxSmooth,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_shader_smoothing(double)));
         connect(_side_widget->SpinBoxShade,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_shader_shading(double)));
+        connect(_side_widget->sh_combo, SIGNAL(currentIndexChanged(int)), _gl_widget, SLOT(set_shader_index(int)));
     }
 
     //--------------------------------

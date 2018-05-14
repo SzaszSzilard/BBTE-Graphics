@@ -469,7 +469,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>0</y>
+       <y>30</y>
        <width>271</width>
        <height>22</height>
       </rect>
@@ -509,7 +509,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>30</y>
+       <y>60</y>
        <width>271</width>
        <height>22</height>
       </rect>
@@ -549,7 +549,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>60</y>
+       <y>90</y>
        <width>271</width>
        <height>22</height>
       </rect>
@@ -581,6 +581,52 @@
         <property name="value">
          <double>1.000000000000000</double>
         </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>271</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <widget class="QLabel" name="label_15">
+        <property name="text">
+         <string>Shaders:</string>
+        </property>
+        <property name="buddy">
+         <cstring>pc_combo</cstring>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="sh_combo">
+        <item>
+         <property name="text">
+          <string>Directional light</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Two sided lighting</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Toonify </string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Reflection lines</string>
+         </property>
+        </item>
        </widget>
       </item>
      </layout>

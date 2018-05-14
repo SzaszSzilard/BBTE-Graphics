@@ -34,7 +34,7 @@ namespace cagd
 
         // your other declarations;
         int         _index, _cc_index,_page_index;
-        int         _ps_index, _mo_index;
+        int         _ps_index, _mo_index, _shader_index;
 
         // variables needed by parametric curves;
         RowMatrix<ParametricCurve3*> _pc;
@@ -109,5 +109,7 @@ namespace cagd
         void set_shader_scale_factor(double value);
         void set_shader_smoothing(double value);
         void set_shader_shading(double value);
+        void set_shader_index(int index);
+        void init_shader(int index);
     };
 }
