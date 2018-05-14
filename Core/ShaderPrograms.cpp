@@ -388,6 +388,20 @@ GLboolean ShaderProgram::SetUniformVariable1i(const GLchar *name, GLint paramete
     return GL_TRUE;
 }
 
+GLboolean ShaderProgram::SetUniformVariable1f(const GLchar *name, GLfloat parameter_1) const
+{
+    if (!_program)
+        return GL_FALSE;
+
+    GLint location = GetUniformVariableLocation(name);
+    if (location == -1)
+            return GL_FALSE;
+
+    glUniform1f(location, parameter_1);
+
+    return GL_TRUE;
+}
+
 GLboolean ShaderProgram::SetUniformVariable2f(const GLchar *name, GLfloat parameter_1, GLfloat parameter_2) const
 {
     if (!_program)
@@ -440,7 +454,7 @@ GLboolean ShaderProgram::SetUniformVariable2i(const GLchar *name, GLint paramete
     if (location == -1)
         return GL_FALSE;
 
-    glUniform1i(location, parameter_1, parameter_2);
+    glUniform2i(location, parameter_1, parameter_2);
 
     return GL_TRUE;
 }
@@ -454,7 +468,7 @@ GLboolean ShaderProgram::SetUniformVariable3i(const GLchar *name, GLint paramete
     if (location == -1)
         return GL_FALSE;
 
-    glUniform1i(location, parameter_1, parameter_2, parameter_3);
+    glUniform3i(location, parameter_1, parameter_2, parameter_3);
 
     return GL_TRUE;
 }
@@ -468,7 +482,7 @@ GLboolean ShaderProgram::SetUniformVariable4i(const GLchar *name, GLint paramete
     if (location == -1)
         return GL_FALSE;
 
-    glUniform1i(location, parameter_1, parameter_2, parameter_3, parameter_4);
+    glUniform4i(location, parameter_1, parameter_2, parameter_3, parameter_4);
 
     return GL_TRUE;
 }

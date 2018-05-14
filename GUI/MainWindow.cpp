@@ -54,6 +54,11 @@ namespace cagd
         connect(_side_widget->pushButton, SIGNAL(pressed()), _gl_widget, SLOT(set_cyclic_curve_index()));
         connect(_side_widget->ps_combo, SIGNAL(currentIndexChanged(int)), _gl_widget, SLOT(set_parametric_surface_index(int)));
         connect(_side_widget->mo_combo, SIGNAL(currentIndexChanged(int)), _gl_widget, SLOT(set_models_index(int)));
+
+        // shaders
+        connect(_side_widget->SpinBoxScale,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_shader_scale_factor(double)));
+        connect(_side_widget->SpinBoxSmooth,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_shader_smoothing(double)));
+        connect(_side_widget->SpinBoxShade,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_shader_shading(double)));
     }
 
     //--------------------------------

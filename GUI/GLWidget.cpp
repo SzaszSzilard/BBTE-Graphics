@@ -99,13 +99,15 @@ namespace cagd
             init_models();
 
             //shaders homework
-            /*if (!_shadersInstallShaders("Shaders/reflection_lines.vert",
-                          "Shaders_refelction_lines.frag",GL_TRE))
-                        throw Exception();
+            if (_shader.InstallShaders("Shaders/reflection_lines.vert",
+                          "Shaders/refelction_lines.frag",GL_TRUE))
+            {
                          _shader.Enable();
-                         _shader.setUniformVariable1f("scale_factor",4.0f);
-                         _shader.setUniformVariable1f("smoothing",2.0f);
-                         _shader.setUniformVariable1f("shading",1.0f);*/
+                         _shader.SetUniformVariable1f("scale_factor",_scale_factor);
+                         _shader.SetUniformVariable1f("smoothing",_smoothing);
+                         _shader.SetUniformVariable1f("shading",_shading);
+                         //_shader.Disable();
+            }
         }
         catch (Exception &e)
         {
@@ -516,6 +518,7 @@ namespace cagd
              if(dl)
              {
                  dl->Enable();
+                 _shader.Enable();
                  MatFBRuby.Apply();
 
                  if (_image_of_mo[_mo_index]->UpdateVertexBufferObjects(GL_DYNAMIC_DRAW))
@@ -531,6 +534,7 @@ namespace cagd
 
                  _image_of_mo[_mo_index]->Render();
                  dl->Disable();
+                 _shader.Disable();
              }
              glDisable(GL_LIGHTING);
              glDisable(GL_NORMALIZE);
@@ -559,4 +563,21 @@ namespace cagd
         updateGL();
     }
 
+    void GLWidget::set_shader_scale_factor(double value)
+    {
+        _scale_factor = value;
+        _shader.SetUniformVariable1f("scale_factor",_scale_factor);
+    }
+
+    void GLWidget::set_shader_smoothing(double value)
+    {
+        _smoothing = value;
+        _shader.SetUniformVariable1f("smoothing",_smoothing);
+    }
+
+    void GLWidget::set_shader_shading(double value)
+    {
+        _shading = value;
+        _shader.SetUniformVariable1f("shading",_shading);
+    }
 }

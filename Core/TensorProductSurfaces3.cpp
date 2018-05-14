@@ -170,7 +170,7 @@ GLboolean TensorProductSurface3::UpdateDataForInterpolation(const RowMatrix<GLdo
 }
 
 // initializes all partial derivatives to the origin
-GLvoid TensorProductSurface3::LoadNullVectors()
+GLvoid TensorProductSurface3::PartialDerivatives::LoadNullVectors()
 {
     for (GLuint j = 0; j < 3; ++j)
     {
@@ -185,8 +185,8 @@ GLvoid TensorProductSurface3::LoadNullVectors()
 TensorProductSurface3::TensorProductSurface3(
         GLdouble u_min, GLdouble u_max,
         GLdouble v_min, GLdouble v_max,
-        GLuint row_count = 4, GLuint column_count = 4,
-        GLboolean u_closed = GL_FALSE, GLboolean v_closed = GL_FALSE)
+        GLuint row_count, GLuint column_count,
+        GLboolean u_closed, GLboolean v_closed)
 {
     _u_min = u_min;
     _u_max=u_max;
@@ -337,7 +337,7 @@ GLvoid TensorProductSurface3::DeleteVertexBufferObjectsOfData()
     }
 }
 
-GLboolean TensorProductSurface3::RenderData(GLenum render_mode = GL_LINE_STRIP) const
+GLboolean TensorProductSurface3::RenderData(GLenum render_mode) const
 {
     if (!_vbo_data)
         return GL_FALSE;
@@ -368,7 +368,7 @@ GLboolean TensorProductSurface3::RenderData(GLenum render_mode = GL_LINE_STRIP) 
     return GL_TRUE;
 }
 
-GLboolean TensorProductSurface3::UpdateVertexBufferObjectsOfData(GLenum usage_flag = GL_STATIC_DRAW)
+GLboolean TensorProductSurface3::UpdateVertexBufferObjectsOfData(GLenum usage_flag)
 {
     if (usage_flag != GL_STREAM_DRAW  && usage_flag != GL_STREAM_READ  && usage_flag != GL_STREAM_COPY
             && usage_flag != GL_DYNAMIC_DRAW && usage_flag != GL_DYNAMIC_READ && usage_flag != GL_DYNAMIC_COPY
@@ -434,7 +434,7 @@ GLboolean TensorProductSurface3::UpdateVertexBufferObjectsOfData(GLenum usage_fl
 RowMatrix<GenericCurve3*>* TensorProductSurface3::GenerateUIsoparametricLines(GLuint iso_line_count,
                                                       GLuint maximum_order_of_derivatives,
                                                       GLuint div_point_count,
-                                                      GLenum usage_flag = GL_STATIC_DRAW) const
+                                                      GLenum usage_flag) const
 {
     RowMatrix<GenericCurve3*>* result = new RowMatrix<GenericCurve3*> (iso_line_count);
     double ustep = (_u_max - _u_min) / (div_point_count - 1);
@@ -460,7 +460,7 @@ RowMatrix<GenericCurve3*>* TensorProductSurface3::GenerateUIsoparametricLines(GL
 RowMatrix<GenericCurve3*>* TensorProductSurface3::GenerateVIsoparametricLines(GLuint iso_line_count,
                                                       GLuint maximum_order_of_derivatives,
                                                       GLuint div_point_count,
-                                                      GLenum usage_flag = GL_STATIC_DRAW) const
+                                                      GLenum usage_flag) const
 {
     RowMatrix<GenericCurve3*>* result = new RowMatrix<GenericCurve3*> (iso_line_count);
     double ustep = (_u_max - _u_min) / (iso_line_count - 1);

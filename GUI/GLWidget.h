@@ -8,6 +8,7 @@
 #include "../Parametric/ParametricCurves3.h"
 #include "../Parametric/ParametricSurfaces3.h"
 #include "../Cyclic/CyclicCurve3.h"
+#include "../Core/ShaderPrograms.h"
 
 
 namespace cagd
@@ -61,8 +62,11 @@ namespace cagd
         QTimer* _timer;
         GLfloat _angle;
 
-        // ShaderProgram _shader;
-
+        // variables needed by shaders
+        ShaderProgram _shader;
+        GLfloat _scale_factor = 4.0f;
+        GLfloat _smoothing = 2.0f;
+        GLfloat _shading = 1.0f;
 
     public:
         // special and default constructor
@@ -102,5 +106,8 @@ namespace cagd
         void render_mo();
 
         void _animate();
+        void set_shader_scale_factor(double value);
+        void set_shader_smoothing(double value);
+        void set_shader_shading(double value);
     };
 }

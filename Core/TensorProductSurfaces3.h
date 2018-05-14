@@ -21,6 +21,17 @@ namespace cagd
             PartialDerivatives(GLuint maximum_order_of_partial_derivatives = 1);
 
             // homework: initializes all partial derivatives to the origin
+            // point of surface
+            DCoordinate3 point;
+
+            // first ordered partial derivates of the surface
+            DCoordinate3 diff1u, diff1v;
+
+            // second ordered partial derivates of the surface
+            DCoordinate3 diff2uu, diff2uv, diff2vv;
+
+            // third ordered partial derivates of the surface
+            DCoordinate3 diff3uuu, diff3uuv, diff3uvv, diff3vvv;
             GLvoid LoadNullVectors();
         };
 
