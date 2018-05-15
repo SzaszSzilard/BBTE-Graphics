@@ -50,16 +50,27 @@ namespace cagd
         connect(_side_widget->trans_z_spin_box, SIGNAL(valueChanged(double)), _gl_widget, SLOT(set_trans_z(double)));
 
         _side_widget->toolBox->setCurrentIndex(0);
+        // parametric curves
         connect(_side_widget->pc_combo, SIGNAL(currentIndexChanged(int)), _gl_widget, SLOT(set_parametric_curve_index(int)));
-        connect(_side_widget->pushButton, SIGNAL(pressed()), _gl_widget, SLOT(set_cyclic_curve_index()));
+
+        // cyclic curves
+        connect(_side_widget->cc_combo, SIGNAL(currentIndexChanged(int)), _gl_widget, SLOT(set_cyclic_curve_index(int)));
+
+        // parametric surfaces
         connect(_side_widget->ps_combo, SIGNAL(currentIndexChanged(int)), _gl_widget, SLOT(set_parametric_surface_index(int)));
+        // models
         connect(_side_widget->mo_combo, SIGNAL(currentIndexChanged(int)), _gl_widget, SLOT(set_models_index(int)));
+        connect(_side_widget->start_animate,SIGNAL(pressed()), _gl_widget, SLOT(start_animate()));
+        connect(_side_widget->stop_animate,SIGNAL(pressed()), _gl_widget, SLOT(stop_animate()));
 
         // shaders
         connect(_side_widget->SpinBoxScale,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_shader_scale_factor(double)));
         connect(_side_widget->SpinBoxSmooth,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_shader_smoothing(double)));
         connect(_side_widget->SpinBoxShade,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_shader_shading(double)));
         connect(_side_widget->sh_combo, SIGNAL(currentIndexChanged(int)), _gl_widget, SLOT(set_shader_index(int)));
+
+        // patches
+        connect(_side_widget->showbutton_patch,SIGNAL(pressed()), _gl_widget, SLOT(set_patch_index()));
     }
 
     //--------------------------------

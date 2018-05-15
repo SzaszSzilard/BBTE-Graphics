@@ -20,9 +20,7 @@ namespace cagd
         _timer = new QTimer(this);
         _timer->setInterval(0);
 
-        connect(_timer, SIGNAL(timeout()), this, SLOT(_animate()));
-
-        _angle = 0.1;
+        _angle = 0.0;
     }
 
     GLWidget::~GLWidget() {
@@ -33,6 +31,11 @@ namespace cagd
         for (GLuint i = 0; i < _num_of_pc; i++)
             if (_image_of_pc[i])
                 delete _image_of_pc[i], _image_of_pc[i] = 0;
+        if (_before_interpolation)
+            delete _before_interpolation, _before_interpolation = 0;
+
+        if (_after_interpolation)
+            delete _after_interpolation, _after_interpolation = 0;
     }
 
     //--------------------------------------------------------------------------------------
@@ -97,6 +100,7 @@ namespace cagd
             init_cyclic_curves();
             init_parametric_surfaces();
             init_models();
+            init_patch();
         }
         catch (Exception &e)
         {
@@ -150,6 +154,10 @@ namespace cagd
             case 4:
                 _shader.Disable();
                 render_ps();
+                break;
+            case 6:
+                _shader.Disable();
+                render_patch();
                 break;
             default:
                 _shader.Disable();
@@ -262,17 +270,30 @@ namespace cagd
         }
     }
 
-    void GLWidget::set_cyclic_curve_index()
+    void GLWidget::set_cyclic_curve_index(int index)
     {
-        _page_index = 2;
+        if (_cc_index != index)
+        {
+            _cc_index = index;
+            _page_index = 2;
+            updateGL();
+        }
+    }
+
+    void GLWidget::set_patch_index()
+    {
+        _page_index = 6;
         updateGL();
     }
 
     void GLWidget::set_models_index(int index){
         if (_mo_index != index)
         {
+            _timer->stop();
             _mo_index = index;
             _page_index = 3;
+            _angle = 0.0;
+            _timer->start();
             updateGL();
         }
     }
@@ -346,9 +367,32 @@ namespace cagd
         }
     }
 
+    void GLWidget::render_pc(){
+        if (_image_of_pc[_index]) {
+            glColor3f(1.0,1.0,1.0);
+            _image_of_pc[_index]->RenderDerivatives(0, GL_LINE_STRIP);
+
+            glPointSize(5.0);
+
+            glColor3f(0.0, 0.5, 0.0);
+            _image_of_pc[_index]->RenderDerivatives(1, GL_LINES);
+            _image_of_pc[_index]->RenderDerivatives(1, GL_POINTS);
+
+            glColor3f(1.0, 0.5, 0.0);
+            _image_of_pc[_index]->RenderDerivatives(2, GL_LINES);
+            _image_of_pc[_index]->RenderDerivatives(2, GL_POINTS);
+
+            glPointSize(1.0);
+        }
+    }
+
     void GLWidget::init_cyclic_curves(){
+
+        _num_of_cc = 6;
+        _cc.ResizeColumns(_num_of_cc);
+
         _n  = 4;
-        _cc = new CyclicCurve3(_n);
+        _cc[0] = new CyclicCurve3(_n);
 
         GLdouble step = TWO_PI / (2 * _n + 1);
 
@@ -356,18 +400,39 @@ namespace cagd
         {
             GLdouble u = i * step;
 
-            DCoordinate3 &cp = (*_cc)[i];
+            DCoordinate3 &cp = (*_cc[0])[i];
 
             cp[0] = cos(u);
             cp[1] = sin(u);
             cp[2] = -2.0 + 4.0 * (GLdouble)rand() / RAND_MAX;
         }
-        _cc->UpdateVertexBufferObjectsOfData();
+        _cc[0]->UpdateVertexBufferObjectsOfData();
 
         _mod = 3;
         _div = 100;
-        _img_cc = _cc->GenerateImage(_mod, _div);
-        _img_cc->UpdateVertexBufferObjects();
+        _img_cc.ResizeColumns(_num_of_cc);
+        _img_cc[0] = _cc[0]->GenerateImage(_mod, _div);
+        _img_cc[0]->UpdateVertexBufferObjects();
+
+        // Here we need to add implementation of interpolating
+        //_cc[1] = new CyclicCurve3(_n);
+    }
+
+    void GLWidget::render_cc(){
+        if (_cc[_cc_index])
+        {
+            _cc[_cc_index]->RenderData(GL_LINE_LOOP);
+        }
+
+        if (_img_cc[_cc_index])
+        {
+            glColor3f(1.0, 0.0, 0.0);
+            _img_cc[_cc_index]->RenderDerivatives(0, GL_LINE_LOOP);
+            glColor3f(0.0, 0.5, 0.0);
+            _img_cc[_cc_index]->RenderDerivatives(1, GL_LINES);
+            glColor3f(0.1, 0.5, 0.9);
+            _img_cc[_cc_index]->RenderDerivatives(2, GL_LINES);
+        }
     }
 
     void GLWidget::init_parametric_surfaces(){
@@ -424,37 +489,6 @@ namespace cagd
         }
     }
 
-    void GLWidget::init_models(){
-        _num_of_mo = 3;
-        _image_of_mo.ResizeColumns(_num_of_mo);
-
-        _image_of_mo[0] = new TriangulatedMesh3();
-        _image_of_mo[0]->LoadFromOFF("Models/mouse.off",true);
-        _image_of_mo[1] = new TriangulatedMesh3();
-        _image_of_mo[1]->LoadFromOFF("Models/elephant.off",true);
-        _image_of_mo[2] = new TriangulatedMesh3();
-        _image_of_mo[2]->LoadFromOFF("Models/sphere.off",true);
-    }
-
-    void GLWidget::render_pc(){
-        if (_image_of_pc[_index]) {
-            glColor3f(1.0,1.0,1.0);
-            _image_of_pc[_index]->RenderDerivatives(0, GL_LINE_STRIP);
-
-            glPointSize(5.0);
-
-            glColor3f(0.0, 0.5, 0.0);
-            _image_of_pc[_index]->RenderDerivatives(1, GL_LINES);
-            _image_of_pc[_index]->RenderDerivatives(1, GL_POINTS);
-
-            glColor3f(1.0, 0.5, 0.0);
-            _image_of_pc[_index]->RenderDerivatives(2, GL_LINES);
-            _image_of_pc[_index]->RenderDerivatives(2, GL_POINTS);
-
-            glPointSize(1.0);
-        }
-    }
-
     void GLWidget::render_ps(){
         if (_image_of_ps[_ps_index]) {
             glEnable(GL_LIGHTING);
@@ -479,25 +513,26 @@ namespace cagd
         }
     }
 
-    void GLWidget::render_cc(){
-        if (_cc)
-        {
-            _cc->RenderData(GL_LINE_LOOP);
-        }
+    void GLWidget::init_models(){
+        _num_of_mo = 3;
+        _image_of_mo.ResizeColumns(_num_of_mo);
 
-        if (_img_cc)
+        _image_of_mo[0] = new TriangulatedMesh3();
+        _image_of_mo[0]->LoadFromOFF("Models/mouse.off",true);
+        _image_of_mo[1] = new TriangulatedMesh3();
+        _image_of_mo[1]->LoadFromOFF("Models/elephant.off",true);
+        _image_of_mo[2] = new TriangulatedMesh3();
+        _image_of_mo[2]->LoadFromOFF("Models/sphere.off",true);
+
+        for(GLuint i = 0; i < _num_of_mo; i++)
         {
-            glColor3f(1.0, 0.0, 0.0);
-            _img_cc->RenderDerivatives(0, GL_LINE_LOOP);
-            glColor3f(0.0, 0.5, 0.0);
-            _img_cc->RenderDerivatives(1, GL_LINES);
-            glColor3f(0.1, 0.5, 0.9);
-            _img_cc->RenderDerivatives(2, GL_LINES);
+            _image_of_mo[i]->UpdateVertexBufferObjects(GL_DYNAMIC_DRAW);
         }
     }
 
     void GLWidget::render_mo(){
          if (_image_of_mo[_mo_index]) {
+
              glEnable(GL_LIGHTING);
              glEnable(GL_NORMALIZE);
 
@@ -513,18 +548,6 @@ namespace cagd
                  dl->Enable();
                  _shader.Enable();
                  MatFBRuby.Apply();
-
-                 if (_image_of_mo[_mo_index]->UpdateVertexBufferObjects(GL_DYNAMIC_DRAW))
-                 {
-                    _angle = 0.0;
-                    _timer->start();
-                 } else {
-                     cout << "Couldn't initialize the model" << endl;
-                     //for (int i = 0; i<_num_of_mo; ++i)
-                     //    delete _image_of_mo[i];
-                     exit(0);
-                 }
-
                  _image_of_mo[_mo_index]->Render();
                  dl->Disable();
                  _shader.Disable();
@@ -536,28 +559,32 @@ namespace cagd
 
     void  GLWidget::_animate()
     {
-        GLfloat* vertex = _image_of_mo[_mo_index]->MapVertexBuffer(GL_READ_WRITE);
-        GLfloat* normal = _image_of_mo[_mo_index]->MapNormalBuffer(GL_READ_ONLY);
-
         _angle += DEG_TO_RADIAN;
         if (_angle >= TWO_PI)
             _angle -= TWO_PI;
 
-        GLfloat scale = sin(_angle) / 3000.0;
-        for (GLuint i = 0; i < _image_of_mo[_mo_index]->VertexCount(); ++i)
+        GLfloat* vertex = _image_of_mo[_mo_index]->MapVertexBuffer(GL_READ_WRITE);
+        GLfloat* normal = _image_of_mo[_mo_index]->MapNormalBuffer(GL_READ_ONLY);
+
+        if (vertex && normal)
         {
-            for (GLuint coordinate = 0; coordinate < 3; ++coordinate, ++vertex, ++normal)
-                *vertex += scale * (*normal);
+            GLfloat scale = sin(_angle) / 3000.0;
+
+            for (GLuint i = 0; i < _image_of_mo[_mo_index]->VertexCount(); ++i)
+            {
+                for (GLuint coordinate = 0; coordinate < 3; ++coordinate, ++vertex, ++normal)
+                    *vertex += scale * (*normal);
+            }
+
+            _image_of_mo[_mo_index]->UnmapVertexBuffer();
+            _image_of_mo[_mo_index]->UnmapNormalBuffer();
+            updateGL();
         }
-
-        _image_of_mo[_mo_index]->UnmapNormalBuffer();
-        _image_of_mo[_mo_index]->UnmapVertexBuffer();
-
-        updateGL();
     }
 
     void GLWidget::set_shader_scale_factor(double value)
     {
+        _shader.Enable();
         if (_shader_index == 3){
             _scale_factor = value;
             _shader.SetUniformVariable1f("scale_factor",_scale_factor);
@@ -567,6 +594,7 @@ namespace cagd
 
     void GLWidget::set_shader_smoothing(double value)
     {
+         _shader.Enable();
         if (_shader_index == 3){
             _smoothing = value;
             _shader.SetUniformVariable1f("smoothing",_smoothing);
@@ -576,6 +604,7 @@ namespace cagd
 
     void GLWidget::set_shader_shading(double value)
     {
+         _shader.Enable();
         if (_shader_index == 3){
             _shading = value;
             _shader.SetUniformVariable1f("shading",_shading);
@@ -595,35 +624,129 @@ namespace cagd
 
     void GLWidget::init_shader(int index)
     {
-        if (_page_index == 3){
-            switch (index) {
-            case 0:
-                _shader.InstallShaders("Shaders/directional_light.vert",
-                                       "Shaders/directional_light.frag",GL_TRUE);
-                break;
-            case 1:
-                _shader.InstallShaders("Shaders/two_sided_lighting.vert",
-                                       "Shaders/two_sided_lighting.frag",GL_TRUE);
-                break;
-            case 2:
-                _shader.InstallShaders("Shaders/toon.vert",
-                                       "Shaders/toon.frag",GL_TRUE);
-                break;
-            case 3:
-                _shader.InstallShaders("Shaders/reflection_lines.vert",
-                                       "Shaders/reflection_lines.frag",GL_TRUE);
-                break;
-            default:
-                break;
-            }
 
-            _shader.Enable();
+        switch (index) {
+        case 0:
+            _shader.InstallShaders("Shaders/directional_light.vert",
+                                   "Shaders/directional_light.frag",GL_TRUE);
+            break;
+        case 1:
+            _shader.InstallShaders("Shaders/two_sided_lighting.vert",
+                                   "Shaders/two_sided_lighting.frag",GL_TRUE);
+            break;
+        case 2:
+            _shader.InstallShaders("Shaders/toon.vert",
+                                   "Shaders/toon.frag",GL_TRUE);
+            break;
+        case 3:
+            _shader.InstallShaders("Shaders/reflection_lines.vert",
+                                   "Shaders/reflection_lines.frag",GL_TRUE);
+            break;
+        default:
+            break;
+        }
+        _shader.Enable();
+        if (index == 3)
+        {
             _shader.SetUniformVariable1f("scale_factor",_scale_factor);
             _shader.SetUniformVariable1f("smoothing",_smoothing);
             _shader.SetUniformVariable1f("shading",_shading);
         }
-        else {
-            _shader.Disable();
+    }
+
+    void GLWidget::init_patch()
+    {
+        _patch.SetData(0, 0, -2.0, -2.0, 0.0);
+        _patch.SetData(0, 1, -2.0, -1.0, 0.0);
+        _patch.SetData(0, 2, -2.0, 1.0, 0.0);
+        _patch.SetData(0, 3, -2.0, 2.0, 0.0);
+
+        _patch.SetData(1, 0, -1.0, -2.0, 0.0);
+        _patch.SetData(1, 1, -1.0, -1.0, 2.0);
+        _patch.SetData(1, 2, -1.0, 1.0, 2.0);
+        _patch.SetData(1, 3, -1.0, 2.0, 0.0);
+
+        _patch.SetData(2, 0, 1.0, -2.0, 0.0);
+        _patch.SetData(2, 1, 1.0, -1.0, 2.0);
+        _patch.SetData(2, 2, 1.0, 1.0, 2.0);
+        _patch.SetData(2, 3, 1.0, 2.0, 0.0);
+
+        _patch.SetData(3, 0, 2.0, -2.0, 0.0);
+        _patch.SetData(3, 1, 2.0, -1.0, 0.0);
+        _patch.SetData(3, 2, 2.0, 1.0, 0.0);
+        _patch.SetData(3, 3, 2.0, 2.0, 0.0);
+
+        _patch.UpdateVertexBufferObjectsOfData();
+
+        _before_interpolation = _patch.GenerateImage(30,30,GL_STATIC_DRAW);
+
+        if (_before_interpolation)
+            _before_interpolation->UpdateVertexBufferObjects();
+
+        RowMatrix<GLdouble> u_knot_vector(4);
+        u_knot_vector(0) = 0.0;
+        u_knot_vector(1) = 1.0 / 3.0;
+        u_knot_vector(2) = 2.0 / 3.0;
+        u_knot_vector(3) = 1.0;
+
+        ColumnMatrix<GLdouble> v_knot_vector(4);
+        v_knot_vector(0) = 0.0;
+        v_knot_vector(1) = 1.0 / 3.0;
+        v_knot_vector(2) = 2.0 / 3.0;
+        v_knot_vector(3) = 1.0;
+
+        Matrix<DCoordinate3> data_points_to_interpolate(4,4);
+        for (GLuint row=0; row<4; ++row)
+            for (GLuint column=0; column<4; ++column)
+                _patch.GetData(row,column,data_points_to_interpolate(row,column));
+
+        if(_patch.UpdateDataForInterpolation(u_knot_vector,v_knot_vector,data_points_to_interpolate))
+        {
+            _after_interpolation = _patch.GenerateImage(30,30,GL_STATIC_DRAW);
+
+            if (_after_interpolation)
+                _after_interpolation->UpdateVertexBufferObjects();
         }
+
+    }
+
+    void GLWidget::render_patch(){
+
+        _patch.RenderData(GL_LINE_STRIP);
+
+        glEnable(GL_LIGHTING);
+        glEnable(GL_NORMALIZE);
+        glEnable(GL_LIGHT0);
+
+        if (_before_interpolation)
+        {
+            MatFBRuby.Apply();
+            _before_interpolation->Render();
+        }
+
+        if (_after_interpolation)
+        {
+            glEnable(GL_BLEND);
+            glDepthMask(GL_FALSE);
+            glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+            MatFBTurquoise.Apply();
+            _after_interpolation->Render();
+            glDepthMask(GL_TRUE);
+            glDisable(GL_BLEND);
+
+        }
+        glDisable(GL_LIGHTING);
+        glDisable(GL_NORMALIZE);
+        glDisable(GL_LIGHT0);
+    }
+
+    void GLWidget::start_animate()
+    {
+        connect(_timer, SIGNAL(timeout()), this, SLOT(_animate()));
+    }
+
+    void GLWidget::stop_animate()
+    {
+        disconnect(_timer, SIGNAL(timeout()), this, SLOT(_animate()));
     }
 }

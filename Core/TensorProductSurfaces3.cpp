@@ -1,5 +1,6 @@
 #include "TensorProductSurfaces3.h"
 #include "RealSquareMatrices.h"
+#include <algorithm>
 
 using namespace cagd;
 using namespace std;
@@ -172,12 +173,15 @@ GLboolean TensorProductSurface3::UpdateDataForInterpolation(const RowMatrix<GLdo
 // initializes all partial derivatives to the origin
 GLvoid TensorProductSurface3::PartialDerivatives::LoadNullVectors()
 {
-    for (GLuint j = 0; j < 3; ++j)
+    for(GLuint r = 0; r < _row_count; r++)
     {
-        point[j] = 0.0;
-        diff1u[j] = 0.0, diff1v[j] = 0.0;
-        diff2uu[j] = 0.0, diff2uv[j] = 0.0, diff2vv[j] = 0.0;
-        diff3uuu[j] = 0.0, diff3uuv[j] = 0.0, diff3uvv[j] = 0.0, diff3vvv[j] = 0.0;
+        for(GLuint c = 0; c <= r; c++)
+        {
+            for (GLuint k = 0; k < 3; k++)
+            {
+                _data[r][c][k]=0.0;
+            }
+        }
     }
 }
 
@@ -443,13 +447,18 @@ RowMatrix<GenericCurve3*>* TensorProductSurface3::GenerateUIsoparametricLines(GL
 
     for(int i = 0; i < iso_line_count; i++)
     {
+        GLdouble v = min(_v_min + i * vstep, _v_max);
         (*result)[i] = new GenericCurve3(1, div_point_count, usage_flag) ;
 
         for(int j = 0; j < div_point_count; j++)
         {
-            CalculatePartialDerivatives(maximum_order_of_derivatives,j*ustep,i*vstep,pd);
-            (*(*result)[i])(0, j) = pd.point;
-            (*(*result)[i])(1, j) = pd.diff1u;
+            GLdouble u = min(_u_min + j * ustep, _u_max);
+            CalculatePartialDerivatives(maximum_order_of_derivatives,u,v,pd);
+
+            for (GLuint r = 0; r<=maximum_order_of_derivatives;r++)
+            {
+                (*(*result)[i])(r, j) = pd(r, 0);
+            }
         }
     }
     return result;
@@ -469,13 +478,17 @@ RowMatrix<GenericCurve3*>* TensorProductSurface3::GenerateVIsoparametricLines(GL
 
     for(int i = 0; i < iso_line_count; i++)
     {
+        GLdouble u = min(_u_min +i * ustep, _u_max);
         (*result)[i] = new GenericCurve3(1, div_point_count, usage_flag) ;
 
         for(int j = 0; j < div_point_count; j++)
         {
-            CalculatePartialDerivatives(maximum_order_of_derivatives,i*ustep,j*vstep,pd);
-            (*(*result)[i])(0, j) = pd.point;
-            (*(*result)[i])(1, j) = pd.diff1u;
+            GLdouble v = min(_v_min +j * vstep, _v_max);
+            CalculatePartialDerivatives(maximum_order_of_derivatives,u,v,pd);
+            for (GLuint r = 0; r<=maximum_order_of_derivatives;r++)
+            {
+                (*(*result)[i])(r, j) = pd(r, r);
+            }
         }
     }
     return result;

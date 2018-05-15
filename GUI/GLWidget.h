@@ -9,6 +9,7 @@
 #include "../Parametric/ParametricSurfaces3.h"
 #include "../Cyclic/CyclicCurve3.h"
 #include "../Core/ShaderPrograms.h"
+#include "../B-spline/BicubicBSplinePatch.h"
 
 
 namespace cagd
@@ -48,8 +49,9 @@ namespace cagd
 
         // CyclicCurve variables;
         GLuint _n;              // num of cyclic curve poits
-        CyclicCurve3* _cc;
-        GenericCurve3 *_img_cc;
+        RowMatrix<CyclicCurve3*> _cc;
+        RowMatrix<GenericCurve3*> _img_cc;
+        GLuint _num_of_cc;
 
         // varibles needed by models;
         RowMatrix<TriangulatedMesh3*> _image_of_mo;
@@ -64,9 +66,13 @@ namespace cagd
 
         // variables needed by shaders
         ShaderProgram _shader;
-        GLfloat _scale_factor = 4.0f;
-        GLfloat _smoothing = 2.0f;
+        GLfloat _scale_factor = 1.0f;
+        GLfloat _smoothing = 1.0f;
         GLfloat _shading = 1.0f;
+
+        BicubicBSplinePatch _patch;
+
+        TriangulatedMesh3 *_before_interpolation, *_after_interpolation;
 
     public:
         // special and default constructor
@@ -93,7 +99,7 @@ namespace cagd
         void set_trans_z(double value);
 
         void set_parametric_curve_index(int index);
-        void set_cyclic_curve_index();
+        void set_cyclic_curve_index(int index);
         void set_parametric_surface_index(int index);
         void set_models_index(int index);
         void init_parametric_curves();
@@ -106,10 +112,15 @@ namespace cagd
         void render_mo();
 
         void _animate();
+        void start_animate();
+        void stop_animate();
         void set_shader_scale_factor(double value);
         void set_shader_smoothing(double value);
         void set_shader_shading(double value);
         void set_shader_index(int index);
         void init_shader(int index);
+        void init_patch();
+        void render_patch();
+        void set_patch_index();
     };
 }
