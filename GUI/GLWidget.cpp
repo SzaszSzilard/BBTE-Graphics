@@ -272,6 +272,7 @@ namespace cagd
 
     void GLWidget::set_cyclic_curve_index(int index)
     {
+        //cout << index << endl;
         if (_cc_index != index)
         {
             _cc_index = index;
@@ -388,7 +389,7 @@ namespace cagd
 
     void GLWidget::init_cyclic_curves(){
 
-        _num_of_cc = 6;
+        _num_of_cc = 2;
         _cc.ResizeColumns(_num_of_cc);
 
         _n  = 4;
@@ -415,7 +416,32 @@ namespace cagd
         _img_cc[0]->UpdateVertexBufferObjects();
 
         // Here we need to add implementation of interpolating
-        //_cc[1] = new CyclicCurve3(_n);
+        _cc[1] = new CyclicCurve3(_n);
+
+        _interp_cc_nodes        = ColumnMatrix<GLdouble>(2 * _n + 1);
+        _interp_cc_derivatives  = ColumnMatrix<DCoordinate3>(2 * _n + 1);
+
+        GLdouble t = 0;
+
+        for (GLuint i = 0; i < 2 * _n + 1; i++, t += step)
+        {
+            _interp_cc_nodes[i] = t;
+
+            DCoordinate3 &cp = (*_cc[1])[i];
+            cp.x() = cos(t);
+            cp.y() = sin(t);
+            cp.z() = 0;
+
+            _interp_cc_derivatives[i] = cp;
+        }
+
+        _interp_cc_derivatives[0][2] = 3.0;
+        _cc[1]->UpdateDataForInterpolation(_interp_cc_nodes, _interp_cc_derivatives);
+        _cc[1]->UpdateVertexBufferObjectsOfData();
+
+        _img_cc[1] = _cc[1]->GenerateImage(_mod, _div);
+        _img_cc[1]->UpdateVertexBufferObjects();
+
     }
 
     void GLWidget::render_cc(){
@@ -432,6 +458,18 @@ namespace cagd
             _img_cc[_cc_index]->RenderDerivatives(1, GL_LINES);
             glColor3f(0.1, 0.5, 0.9);
             _img_cc[_cc_index]->RenderDerivatives(2, GL_LINES);
+
+            if (_cc_index == 1)
+            {
+                glPointSize(25.0);
+                glBegin(GL_POINTS);
+                    for (GLuint i = 0; i < 2 * _n + 1; i++)
+                    {
+                            glVertex3f(_interp_cc_derivatives[i].x(), _interp_cc_derivatives[i].y(), _interp_cc_derivatives[i].z());
+                    }
+                glEnd();
+                glPointSize(1.0);
+            }
         }
     }
 
@@ -700,6 +738,14 @@ namespace cagd
             for (GLuint column=0; column<4; ++column)
                 _patch.GetData(row,column,data_points_to_interpolate(row,column));
 
+        /////////////////////////////////////////////
+        _uLine_num = 7;
+        _vLine_num = 12;
+        GLuint divpoints = 200;
+        _uLines = _patch.GenerateUIsoparametricLines(_uLine_num,1,divpoints);
+        _vLines = _patch.GenerateVIsoparametricLines(_vLine_num,1,divpoints);
+        /////////////////////////////////////////////
+
         if(_patch.UpdateDataForInterpolation(u_knot_vector,v_knot_vector,data_points_to_interpolate))
         {
             _after_interpolation = _patch.GenerateImage(30,30,GL_STATIC_DRAW);
@@ -707,7 +753,6 @@ namespace cagd
             if (_after_interpolation)
                 _after_interpolation->UpdateVertexBufferObjects();
         }
-
     }
 
     void GLWidget::render_patch(){
@@ -735,9 +780,26 @@ namespace cagd
             glDisable(GL_BLEND);
 
         }
+
         glDisable(GL_LIGHTING);
         glDisable(GL_NORMALIZE);
         glDisable(GL_LIGHT0);
+
+        ///////////////////////////////////////////
+        //ulines
+        for (int i = 0; i < _uLine_num; i++) {
+            (*_uLines)[i]->UpdateVertexBufferObjects();
+            glColor3f(1.0, 0.0, 0.0);
+            (*_uLines)[i]->RenderDerivatives(0, GL_LINE_STRIP);
+        }
+        //vlines
+        for (int i = 0; i < _vLine_num; i++) {
+            (*_vLines)[i]->UpdateVertexBufferObjects();
+            glColor3f(0.0, 0.0, 1.0);
+            (*_vLines)[i]->RenderDerivatives(0, GL_LINE_STRIP);
+        }
+        //////////////////////////////////////////
+
     }
 
     void GLWidget::start_animate()
