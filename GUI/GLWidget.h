@@ -53,6 +53,9 @@ namespace cagd
         RowMatrix<GenericCurve3*> _img_cc;
         GLuint _num_of_cc;
 
+        ColumnMatrix<DCoordinate3>  _interp_cc_derivatives;
+        ColumnMatrix<GLdouble>      _interp_cc_nodes;
+
         // varibles needed by models;
         RowMatrix<TriangulatedMesh3*> _image_of_mo;
         GLuint _num_of_mo;
@@ -71,6 +74,9 @@ namespace cagd
         GLfloat _shading = 1.0f;
 
         BicubicBSplinePatch _patch;
+        RowMatrix<GenericCurve3*>* _uLines;
+        RowMatrix<GenericCurve3*>* _vLines;
+        GLuint _uLine_num, _vLine_num;
 
         TriangulatedMesh3 *_before_interpolation, *_after_interpolation;
 
