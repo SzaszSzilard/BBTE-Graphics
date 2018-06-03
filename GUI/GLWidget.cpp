@@ -100,6 +100,7 @@ namespace cagd
             init_cyclic_curves();
             init_parametric_surfaces();
             init_models();
+            init_bspline_arc();
             init_patch();
         }
         catch (Exception &e)
@@ -161,7 +162,7 @@ namespace cagd
                 break;
             default:
                 _shader.Disable();
-                render_pc();
+                render_bspline_arc();
                 break;
             }
 
@@ -409,8 +410,8 @@ namespace cagd
         }
         _cc[0]->UpdateVertexBufferObjectsOfData();
 
-        _mod = 3;
-        _div = 100;
+        GLuint _mod = 3;
+        GLuint _div = 100;
         _img_cc.ResizeColumns(_num_of_cc);
         _img_cc[0] = _cc[0]->GenerateImage(_mod, _div);
         _img_cc[0]->UpdateVertexBufferObjects();
@@ -689,6 +690,70 @@ namespace cagd
             _shader.SetUniformVariable1f("scale_factor",_scale_factor);
             _shader.SetUniformVariable1f("smoothing",_smoothing);
             _shader.SetUniformVariable1f("shading",_shading);
+        }
+    }
+
+    void GLWidget::init_bspline_arc() {
+        GLuint _n = 5;
+        _num_of_bspa = 1;
+        _bspa.ResizeColumns(_num_of_bspa);
+
+        RowMatrix<DCoordinate3> cpt;
+        cpt.ResizeColumns(_n);
+        GLdouble step = TWO_PI / _n;
+
+        for (GLuint i = 0; i < _n; i++)
+        {
+            GLdouble u = i * step;
+            DCoordinate3 cp;
+            cp[0] = cos(u);
+            cp[1] = sin(u);
+
+            cpt[i] = cp;
+        }
+
+        for (int i = 0; i < _num_of_bspa; ++i )
+            _bspa[i] = new BicubicBSplineArc(); // 4 by default
+
+
+        for (int i = 0 ; i < _num_of_bspa; ++i)
+        for (int j = 0 ; j < 4; ++j) {
+            (*_bspa[i])[j] = cpt[(i+j)%_n];
+        }
+
+
+        _mod = 1; // 0th, and 1st order derivatves are all we need, if i understood right
+        _div = 50;
+
+        for (int i = 0; i < _num_of_bspa; ++i ) {
+            _bspa[i]->UpdateVertexBufferObjectsOfData();
+
+            _img_bspa.ResizeColumns(_num_of_bspa);
+            _img_bspa[i] = _bspa[i]->GenerateImage(_mod, _div);
+            _img_bspa[i]->UpdateVertexBufferObjects();
+        }
+    }
+
+    void GLWidget::render_bspline_arc(){
+
+        for ( int i = 0; i <_num_of_bspa; ++i ) {
+            if (_bspa[i])
+            {
+                glColor3f(0.5, 0.5, 0.5);
+                _bspa[i]->RenderData(GL_LINE_STRIP);
+
+                glPointSize(10.0);
+                _bspa[i]->RenderData(GL_POINTS);
+            }
+
+            if (_img_bspa[i])
+            {
+                glColor3f(1.0, 0.0, 0.0);
+                _img_bspa[i]->RenderDerivatives(0, GL_LINE_STRIP);
+
+                //glColor3f(0.0, 0.5, 0.0);
+                //_img_bspa[i]->RenderDerivatives(1, GL_LINES);
+            }
         }
     }
 
