@@ -787,13 +787,13 @@ namespace cagd
 
         ///////////////////////////////////////////
         //ulines
-        for (int i = 0; i < _uLine_num; i++) {
+        for (GLuint i = 0; i < _uLine_num; i++) {
             (*_uLines)[i]->UpdateVertexBufferObjects();
             glColor3f(1.0, 0.0, 0.0);
             (*_uLines)[i]->RenderDerivatives(0, GL_LINE_STRIP);
         }
         //vlines
-        for (int i = 0; i < _vLine_num; i++) {
+        for (GLuint i = 0; i < _vLine_num; i++) {
             (*_vLines)[i]->UpdateVertexBufferObjects();
             glColor3f(0.0, 0.0, 1.0);
             (*_vLines)[i]->RenderDerivatives(0, GL_LINE_STRIP);
