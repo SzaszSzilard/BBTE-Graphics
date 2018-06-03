@@ -10,6 +10,7 @@
 #include "../Cyclic/CyclicCurve3.h"
 #include "../Core/ShaderPrograms.h"
 #include "../B-spline/BicubicBSplinePatch.h"
+#include "../B-spline/BicubicBSplineArc.h"
 
 
 namespace cagd
@@ -34,7 +35,7 @@ namespace cagd
         double      _trans_x, _trans_y, _trans_z;
 
         // your other declarations;
-        int         _index, _cc_index,_page_index;
+        int         _index, _cc_index, _page_index;
         int         _ps_index, _mo_index, _shader_index;
 
         // variables needed by parametric curves;
@@ -48,7 +49,7 @@ namespace cagd
         GLuint _num_of_ps;
 
         // CyclicCurve variables;
-        GLuint _n;              // num of cyclic curve poits
+        GLuint _n;              // num of cyclic curve points
         RowMatrix<CyclicCurve3*> _cc;
         RowMatrix<GenericCurve3*> _img_cc;
         GLuint _num_of_cc;
@@ -73,12 +74,22 @@ namespace cagd
         GLfloat _smoothing = 1.0f;
         GLfloat _shading = 1.0f;
 
+        // B-spline Patch variables
         BicubicBSplinePatch _patch;
         RowMatrix<GenericCurve3*>* _uLines;
         RowMatrix<GenericCurve3*>* _vLines;
         GLuint _uLine_num, _vLine_num;
 
         TriangulatedMesh3 *_before_interpolation, *_after_interpolation;
+
+        // B-spline Arc variables
+        // GLuint _n;              // num of Arc points points, 4 by default
+        RowMatrix<BicubicBSplineArc*> _bspa;
+        RowMatrix<GenericCurve3*> _img_bspa;
+        GLuint _num_of_bspa;
+
+        ColumnMatrix<GLdouble>      _interp_bspa_nodes;
+        ColumnMatrix<DCoordinate3>  _interp_bspa_derivatives;
 
     public:
         // special and default constructor
@@ -108,14 +119,21 @@ namespace cagd
         void set_cyclic_curve_index(int index);
         void set_parametric_surface_index(int index);
         void set_models_index(int index);
+
         void init_parametric_curves();
         void init_cyclic_curves();
         void init_parametric_surfaces();
         void init_models();
+        void init_patch();
+        void init_bspline_arc();
+        void init_shader(int index);
+
         void render_pc();
         void render_cc();
         void render_ps();
         void render_mo();
+        void render_bspline_arc();
+        void render_patch();
 
         void _animate();
         void start_animate();
@@ -124,9 +142,6 @@ namespace cagd
         void set_shader_smoothing(double value);
         void set_shader_shading(double value);
         void set_shader_index(int index);
-        void init_shader(int index);
-        void init_patch();
-        void render_patch();
         void set_patch_index();
     };
 }

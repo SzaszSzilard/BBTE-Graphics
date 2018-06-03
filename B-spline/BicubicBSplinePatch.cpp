@@ -66,7 +66,7 @@ GLboolean BicubicBSplinePatch::CalculatePartialDerivatives(
     d1_u_blending_values(2) = (-3*u2)/2 + u + 0.5;
     d1_u_blending_values(3) = 0.5 * wu2;
 
-    // blending function values and derivatives in u-direction
+    // blending function values and derivatives in v-direction
     RowMatrix<GLdouble> v_blending_values(4), d1_v_blending_values(4);
 
     GLdouble v2 = v*v, v3 = v2*v;
@@ -82,6 +82,7 @@ GLboolean BicubicBSplinePatch::CalculatePartialDerivatives(
     d1_v_blending_values(2) = (-3*v2)/2 + v + 0.5;
     d1_v_blending_values(3) =  0.5 * wv2;
 
+    // calculate partial derivatives
     pd.ResizeRows(2);
     pd.LoadNullVectors();
     for (GLuint row = 0; row < 4; ++row)

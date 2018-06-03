@@ -76,7 +76,8 @@ HEADERS += \
     GUI/GLWidget.h \
     GUI/MainWindow.h \
     GUI/SideWidget.h \
-    B-spline/BicubicBSplinePatch.h
+    B-spline/BicubicBSplinePatch.h \
+    B-spline/BicubicBSplineArc.h
 
 SOURCES += \
     Core/GenericCurves3.cpp \
@@ -95,7 +96,8 @@ SOURCES += \
     Core/Materials.cpp \
     Core/TensorProductSurfaces3.cpp \
     Core/ShaderPrograms.cpp \
-    B-spline/BicubicBSplinePatch.cpp
+    B-spline/BicubicBSplinePatch.cpp \
+    B-spline/BicubicBSplineArc.cpp
 
 FORMS += \
     GUI/MainWindow.ui \
