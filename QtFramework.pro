@@ -77,7 +77,9 @@ HEADERS += \
     GUI/MainWindow.h \
     GUI/SideWidget.h \
     B-spline/BicubicBSplinePatch.h \
+    B-spline/BicubicBSplineArc.h \
     B-spline/BicubicBSplineArc.h
+
 
 SOURCES += \
     Core/GenericCurves3.cpp \

@@ -76,11 +76,13 @@ namespace cagd
 
         // B-spline Patch variables
         BicubicBSplinePatch _patch;
+        BicubicBSplinePatch _patch2;
         RowMatrix<GenericCurve3*>* _uLines;
         RowMatrix<GenericCurve3*>* _vLines;
         GLuint _uLine_num, _vLine_num;
 
         TriangulatedMesh3 *_before_interpolation, *_after_interpolation;
+        TriangulatedMesh3 *_before_interpolation2, *_after_interpolation2;
 
         // B-spline Arc variables
         // GLuint _n;              // num of Arc points points, 4 by default

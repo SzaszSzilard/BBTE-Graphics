@@ -161,7 +161,7 @@ namespace cagd
                 render_patch();
                 break;
             default:
-                _shader.Disable();
+                //_shader.Disable();
                 render_bspline_arc();
                 break;
             }
@@ -765,18 +765,18 @@ namespace cagd
         _patch.SetData(0, 3, -2.0, 2.0, 0.0);
 
         _patch.SetData(1, 0, -1.0, -2.0, 0.0);
-        _patch.SetData(1, 1, -1.0, -1.0, 2.0);
-        _patch.SetData(1, 2, -1.0, 1.0, 2.0);
+        _patch.SetData(1, 1, -1.0, -1.0, 0.0);
+        _patch.SetData(1, 2, -1.0, 1.0, 0.0);
         _patch.SetData(1, 3, -1.0, 2.0, 0.0);
 
         _patch.SetData(2, 0, 1.0, -2.0, 0.0);
-        _patch.SetData(2, 1, 1.0, -1.0, 2.0);
-        _patch.SetData(2, 2, 1.0, 1.0, 2.0);
+        _patch.SetData(2, 1, 1.0, -1.0, 0.0);
+        _patch.SetData(2, 2, 1.0, 1.0, 0.0);
         _patch.SetData(2, 3, 1.0, 2.0, 0.0);
 
         _patch.SetData(3, 0, 2.0, -2.0, 0.0);
-        _patch.SetData(3, 1, 2.0, -1.0, 0.0);
-        _patch.SetData(3, 2, 2.0, 1.0, 0.0);
+        _patch.SetData(3, 1, 2.0, -1.0, 2.0);
+        _patch.SetData(3, 2, 2.0, 1.0, 2.0);
         _patch.SetData(3, 3, 2.0, 2.0, 0.0);
 
         _patch.UpdateVertexBufferObjectsOfData();
@@ -803,26 +803,90 @@ namespace cagd
             for (GLuint column=0; column<4; ++column)
                 _patch.GetData(row,column,data_points_to_interpolate(row,column));
 
-        /////////////////////////////////////////////
+        /*/////////////////////////////////////////////
         _uLine_num = 7;
         _vLine_num = 12;
         GLuint divpoints = 200;
         _uLines = _patch.GenerateUIsoparametricLines(_uLine_num,1,divpoints);
         _vLines = _patch.GenerateVIsoparametricLines(_vLine_num,1,divpoints);
-        /////////////////////////////////////////////
+        /////////////////////////////////////////////*/
 
         if(_patch.UpdateDataForInterpolation(u_knot_vector,v_knot_vector,data_points_to_interpolate))
         {
-            _after_interpolation = _patch.GenerateImage(30,30,GL_STATIC_DRAW);
+            _after_interpolation = _patch.GenerateImage(60,60,GL_STATIC_DRAW);
 
             if (_after_interpolation)
                 _after_interpolation->UpdateVertexBufferObjects();
+        }
+
+
+        ////test
+        ///
+        _patch2.SetData(0, 0, -1.0, -2.0, 0.0);
+        _patch2.SetData(0, 1, -1.0, -1.0, 2.0);
+        _patch2.SetData(0, 2, -1.0, 1.0, 2.0);
+        _patch2.SetData(0, 3, -1.0, 2.0, 0.0);
+
+        _patch2.SetData(1, 0, 1.0, -2.0, 0.0);
+        _patch2.SetData(1, 1, 1.0, -1.0, 0.0);
+        _patch2.SetData(1, 2, 1.0, 1.0, 0.0);
+        _patch2.SetData(1, 3, 1.0, 2.0, 0.0);
+
+        _patch2.SetData(2, 0, 2.0, -2.0, 0.0);
+        _patch2.SetData(2, 1, 2.0, -1.0, 0.0);
+        _patch2.SetData(2, 2, 2.0, 1.0, 0.0);
+        _patch2.SetData(2, 3, 2.0, 2.0, 0.0);
+
+        _patch2.SetData(3, 0, 3.0, -2.0, 0.0);
+        _patch2.SetData(3, 1, 3.0, -1.0, 0.0);
+        _patch2.SetData(3, 2, 3.0, 1.0, 0.0);
+        _patch2.SetData(3, 3, 3.0, 2.0, 0.0);
+
+        _patch2.UpdateVertexBufferObjectsOfData();
+
+        _before_interpolation2 = _patch2.GenerateImage(30,30,GL_STATIC_DRAW);
+
+        if (_before_interpolation2)
+            _before_interpolation2->UpdateVertexBufferObjects();
+
+        RowMatrix<GLdouble> u_knot_vector2(4);
+        u_knot_vector2(0) = 0.0;
+        u_knot_vector2(1) = 1.0 / 3.0;
+        u_knot_vector2(2) = 2.0 / 3.0;
+        u_knot_vector2(3) = 1.0;
+
+        ColumnMatrix<GLdouble> v_knot_vector2(4);
+        v_knot_vector2(0) = 0.0;
+        v_knot_vector2(1) = 1.0 / 3.0;
+        v_knot_vector2(2) = 2.0 / 3.0;
+        v_knot_vector2(3) = 1.0;
+
+        Matrix<DCoordinate3> data_points_to_interpolate2(4,4);
+        for (GLuint row=0; row<4; ++row)
+            for (GLuint column=0; column<4; ++column)
+                _patch2.GetData(row,column,data_points_to_interpolate2(row,column));
+
+        /*/////////////////////////////////////////////
+        _uLine_num = 7;
+        _vLine_num = 12;
+        GLuint divpoints = 200;
+        _uLines = _patch.GenerateUIsoparametricLines(_uLine_num,1,divpoints);
+        _vLines = _patch.GenerateVIsoparametricLines(_vLine_num,1,divpoints);
+        /////////////////////////////////////////////*/
+
+        if(_patch2.UpdateDataForInterpolation(u_knot_vector2,v_knot_vector2,data_points_to_interpolate2))
+        {
+            _after_interpolation2 = _patch2.GenerateImage(30,30,GL_STATIC_DRAW);
+
+            if (_after_interpolation2)
+                _after_interpolation2->UpdateVertexBufferObjects();
         }
     }
 
     void GLWidget::render_patch(){
 
         _patch.RenderData(GL_LINE_STRIP);
+        _patch2.RenderData(GL_LINE_STRIP);
 
         glEnable(GL_LIGHTING);
         glEnable(GL_NORMALIZE);
@@ -830,13 +894,17 @@ namespace cagd
 
         if (_before_interpolation)
         {
+            _shader.Enable();
             MatFBRuby.Apply();
             _before_interpolation->Render();
+            _before_interpolation2->Render();
+            _shader.Disable();
         }
 
-        if (_after_interpolation)
+        /*if (_after_interpolation)
         {
             glEnable(GL_BLEND);
+
             glDepthMask(GL_FALSE);
             glBlendFunc(GL_SRC_ALPHA,GL_ONE);
             MatFBTurquoise.Apply();
@@ -844,13 +912,13 @@ namespace cagd
             glDepthMask(GL_TRUE);
             glDisable(GL_BLEND);
 
-        }
+        }*/
 
         glDisable(GL_LIGHTING);
         glDisable(GL_NORMALIZE);
         glDisable(GL_LIGHT0);
 
-        ///////////////////////////////////////////
+        /*
         //ulines
         for (GLuint i = 0; i < _uLine_num; i++) {
             (*_uLines)[i]->UpdateVertexBufferObjects();
@@ -863,7 +931,7 @@ namespace cagd
             glColor3f(0.0, 0.0, 1.0);
             (*_vLines)[i]->RenderDerivatives(0, GL_LINE_STRIP);
         }
-        //////////////////////////////////////////
+        //////////////////////////////////////////*/
 
     }
 
