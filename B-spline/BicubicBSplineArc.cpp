@@ -49,7 +49,8 @@ namespace cagd
         d1_u_blending_values(0) = -0.5 * wu2;
         d1_u_blending_values(1) = 0.5 * u * (3*u - 4);
         d1_u_blending_values(2) = (-3*u2)/2 + u + 0.5;
-        d1_u_blending_values(3) = 0.5 * wu2;
+        d1_u_blending_values(3) = 0.5 * u2;
+//        d1_u_blending_values(2) = 0.5 * (1-u2);
 
         // calculate partial derivatives
         d.ResizeRows(max_order_of_derivatives+1);

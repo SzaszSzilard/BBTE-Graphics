@@ -161,7 +161,8 @@ namespace cagd
                 render_patch();
                 break;
             default:
-                render_patch();
+                //render_patch();
+                render_bspline_arc();
                 break;
             }
 
@@ -839,7 +840,13 @@ namespace cagd
                 for (GLuint i = 0; i < 4; ++i)
                     for (GLuint j = 0; j < 4; ++j) {
                         _patch_toroid(pi,pj)->SetData(i,j,cp((pi+i)%n,(pj+j)%m)[0],cp((pi+i)%n,(pj+j)%m)[1],cp((pi+i)%n,(pj+j)%m)[2]);
-                        _patch_cylindric(pi,pj)->SetData(i,j,cp2((pi+i)%n,(pj+j)%m)[0],cp2((pi+i)%n,(pj+j)%m)[1],cp2((pi+i)%n,(pj+j)%m)[2]);
+                    }
+
+        for (GLuint pi = 0; pi < n - 3; ++pi)
+            for (GLuint pj = 0; pj < m; ++pj)
+                for (GLuint i = 0; i < 4; ++i)
+                    for (GLuint j = 0; j < 4; ++j) {
+                        _patch_cylindric(pi,pj)->SetData(i,j,cp2((pi+i),(pj+j)%m)[0],cp2((pi+i),(pj+j)%m)[1],cp2((pi+i),(pj+j)%m)[2]);
                     }
 
         bi_toroid.ResizeRows(n);
