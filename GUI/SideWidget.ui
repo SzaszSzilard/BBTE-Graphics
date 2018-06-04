@@ -43,7 +43,7 @@
       <x>3</x>
       <y>21</y>
       <width>261</width>
-      <height>230</height>
+      <height>421</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout">
@@ -230,7 +230,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>5</number>
    </property>
    <widget class="QWidget" name="page">
     <property name="geometry">
@@ -326,7 +326,7 @@
       <string>Show Cyclic curve</string>
      </property>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>1</x>
@@ -391,7 +391,7 @@
       <cstring>pc_combo</cstring>
      </property>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -432,12 +432,12 @@
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>140</x>
        <y>30</y>
-       <width>131</width>
+       <width>158</width>
        <height>25</height>
       </rect>
      </property>
@@ -703,23 +703,31 @@
     </widget>
    </widget>
    <widget class="QWidget" name="page_6">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>271</width>
+      <height>119</height>
+     </rect>
+    </property>
     <attribute name="label">
      <string>B-spline patches</string>
     </attribute>
     <widget class="QWidget" name="">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>1</x>
        <y>0</y>
        <width>271</width>
-       <height>25</height>
+       <height>22</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_5">
       <item>
        <widget class="QLabel" name="label_16">
         <property name="text">
-         <string>Simple 4x4 patch</string>
+         <string>BSpline stuffs:</string>
         </property>
         <property name="buddy">
          <cstring>pc_combo</cstring>
@@ -727,10 +735,27 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="showbutton_patch">
-        <property name="text">
-         <string>Show</string>
-        </property>
+       <widget class="QComboBox" name="patch_comb">
+        <item>
+         <property name="text">
+          <string>Simple</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Toroid</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Cylindrical</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Curve</string>
+         </property>
+        </item>
        </widget>
       </item>
      </layout>

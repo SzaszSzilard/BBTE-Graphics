@@ -157,13 +157,10 @@ namespace cagd
                 render_ps();
                 break;
             case 6:
-                _shader.Disable();
+                //_shader.Disable();
                 render_patch();
                 break;
             default:
-                //_shader.Disable();
-
-                //render_bspline_arc();
                 render_patch();
                 break;
             }
@@ -284,10 +281,14 @@ namespace cagd
         }
     }
 
-    void GLWidget::set_patch_index()
+    void GLWidget::set_patch_index(int index)
     {
-        _page_index = 6;
-        updateGL();
+        if (_patch_index != index)
+        {
+            _patch_index = index;
+            _page_index = 6;
+            updateGL();
+        }
     }
 
     void GLWidget::set_models_index(int index){
@@ -696,8 +697,8 @@ namespace cagd
     }
 
     void GLWidget::init_bspline_arc() {
-        GLuint _n = 5;
-        _num_of_bspa = 1;
+        GLuint _n = 8;
+        _num_of_bspa = 8;
         _bspa.ResizeColumns(_num_of_bspa);
 
         RowMatrix<DCoordinate3> cpt;
@@ -714,12 +715,12 @@ namespace cagd
             cpt[i] = cp;
         }
 
-        for (int i = 0; i < _num_of_bspa; ++i )
+        for (GLuint i = 0; i < _num_of_bspa; ++i )
             _bspa[i] = new BicubicBSplineArc(); // 4 by default
 
 
-        for (int i = 0 ; i < _num_of_bspa; ++i)
-        for (int j = 0 ; j < 4; ++j) {
+        for (GLuint i = 0 ; i < _num_of_bspa; ++i)
+        for (GLuint j = 0 ; j < 4; ++j) {
             (*_bspa[i])[j] = cpt[(i+j)%_n];
         }
 
@@ -727,7 +728,7 @@ namespace cagd
         _mod = 1; // 0th, and 1st order derivatves are all we need, if i understood right
         _div = 50;
 
-        for (int i = 0; i < _num_of_bspa; ++i ) {
+        for (GLuint i = 0; i < _num_of_bspa; ++i ) {
             _bspa[i]->UpdateVertexBufferObjectsOfData();
 
             _img_bspa.ResizeColumns(_num_of_bspa);
@@ -737,8 +738,8 @@ namespace cagd
     }
 
     void GLWidget::render_bspline_arc(){
-
-        for ( int i = 0; i <_num_of_bspa; ++i ) {
+        _shader.Disable();
+        for ( GLuint i = 0; i <_num_of_bspa; ++i ) {
             if (_bspa[i])
             {
                 glColor3f(0.5, 0.5, 0.5);
@@ -799,10 +800,10 @@ namespace cagd
 
     void GLWidget::init_patch()
     {
-        cGridn=7;
-        cGridm=9;
-        nPatchn=7;
-        nPatchm=9;
+        cGridn=10;
+        cGridm=12;
+        nPatchn=10;
+        nPatchm=12;
 
         GLuint n = cGridn;
         GLuint m = cGridm;
@@ -810,65 +811,73 @@ namespace cagd
         Matrix<DCoordinate3> cp;
         cp.ResizeRows(n);
         cp.ResizeColumns(m);
+        Matrix<DCoordinate3> cp2;
+        cp2.ResizeRows(n);
+        cp2.ResizeColumns(m);
 
         for (GLuint i = 0; i < n; ++i)
-            for (GLuint j = 0; j < m; ++j)
+            for (GLuint j = 0; j < m; ++j){
                 cp(i,j) = getTorusPoint(i,j,n-1,m-1);
-                //cp(i,j) = getCylinderPoint(i,j,n-1,m-1);
+                cp2(i,j) = getCylinderPoint(i,j,n-1,m-1);
+            }
 
 
-        _patch.ResizeRows(n);
-        _patch.ResizeColumns(m);
+        _patch_toroid.ResizeRows(n);
+        _patch_toroid.ResizeColumns(m);
+        _patch_cylindric.ResizeRows(n);
+        _patch_cylindric.ResizeColumns(m);
 
         for (GLuint i = 0; i < n; ++i)
-            for (GLuint j = 0; j < m; ++j)
-                _patch(i,j) = new BicubicBSplinePatch();
-
+            for (GLuint j = 0; j < m; ++j){
+                _patch_toroid(i,j) = new BicubicBSplinePatch();
+                _patch_cylindric(i,j) = new BicubicBSplinePatch();
+            }
 
         for (GLuint pi = 0; pi < n; ++pi)
             for (GLuint pj = 0; pj < m; ++pj)
                 for (GLuint i = 0; i < 4; ++i)
                     for (GLuint j = 0; j < 4; ++j) {
-
-                        _patch(pi,pj)->SetData(i,j,cp((pi+i)%n,(pj+j)%m)[0],cp((pi+i)%n,(pj+j)%m)[1],cp((pi+i)%n,(pj+j)%m)[2]);
-
+                        _patch_toroid(pi,pj)->SetData(i,j,cp((pi+i)%n,(pj+j)%m)[0],cp((pi+i)%n,(pj+j)%m)[1],cp((pi+i)%n,(pj+j)%m)[2]);
+                        _patch_cylindric(pi,pj)->SetData(i,j,cp2((pi+i)%n,(pj+j)%m)[0],cp2((pi+i)%n,(pj+j)%m)[1],cp2((pi+i)%n,(pj+j)%m)[2]);
                     }
 
-        bi.ResizeRows(n);
-        bi.ResizeColumns(m);
+        bi_toroid.ResizeRows(n);
+        bi_toroid.ResizeColumns(m);
+
+        bi_cylindric.ResizeRows(n);
+        bi_cylindric.ResizeColumns(m);
 
         for (GLuint pi = 0; pi < n; ++pi)
             for (GLuint pj = 0; pj < m; ++pj) {
-                _patch(pi,pj)->UpdateVertexBufferObjectsOfData();
-                //_before_interpolation = _patch(pi,pj)->GenerateImage(30,30,GL_STATIC_DRAW);
-                bi(pi,pj) = _patch(pi,pj)->GenerateImage(30,30,GL_STATIC_DRAW);
+                _patch_toroid(pi,pj)->UpdateVertexBufferObjectsOfData();
+                _patch_cylindric(pi,pj)->UpdateVertexBufferObjectsOfData();
+                bi_toroid(pi,pj) = _patch_toroid(pi,pj)->GenerateImage(30,30,GL_STATIC_DRAW);
+                bi_cylindric(pi,pj) = _patch_cylindric(pi,pj)->GenerateImage(30,30,GL_STATIC_DRAW);
 
-                //if (_before_interpolation)
-                //    _before_interpolation->UpdateVertexBufferObjects();
-
-                if (bi(pi,pj))
-                    bi(pi,pj)->UpdateVertexBufferObjects();
+                if (bi_toroid(pi,pj))
+                    bi_toroid(pi,pj)->UpdateVertexBufferObjects();
+                if (bi_cylindric(pi,pj))
+                    bi_cylindric(pi,pj)->UpdateVertexBufferObjects();
             }
 
-        /*
         _patch.SetData(0, 0, -2.0, -2.0, 0.0);
         _patch.SetData(0, 1, -2.0, -1.0, 0.0);
         _patch.SetData(0, 2, -2.0, 1.0, 0.0);
         _patch.SetData(0, 3, -2.0, 2.0, 0.0);
 
         _patch.SetData(1, 0, -1.0, -2.0, 0.0);
-        _patch.SetData(1, 1, -1.0, -1.0, 0.0);
-        _patch.SetData(1, 2, -1.0, 1.0, 0.0);
+        _patch.SetData(1, 1, -1.0, -1.0, 2.0);
+        _patch.SetData(1, 2, -1.0, 1.0, 2.0);
         _patch.SetData(1, 3, -1.0, 2.0, 0.0);
 
         _patch.SetData(2, 0, 1.0, -2.0, 0.0);
-        _patch.SetData(2, 1, 1.0, -1.0, 0.0);
-        _patch.SetData(2, 2, 1.0, 1.0, 0.0);
+        _patch.SetData(2, 1, 1.0, -1.0, 2.0);
+        _patch.SetData(2, 2, 1.0, 1.0, 2.0);
         _patch.SetData(2, 3, 1.0, 2.0, 0.0);
 
         _patch.SetData(3, 0, 2.0, -2.0, 0.0);
-        _patch.SetData(3, 1, 2.0, -1.0, 2.0);
-        _patch.SetData(3, 2, 2.0, 1.0, 2.0);
+        _patch.SetData(3, 1, 2.0, -1.0, 0.0);
+        _patch.SetData(3, 2, 2.0, 1.0, 0.0);
         _patch.SetData(3, 3, 2.0, 2.0, 0.0);
 
         _patch.UpdateVertexBufferObjectsOfData();
@@ -897,7 +906,6 @@ namespace cagd
         for (GLuint row=0; row<4; ++row)
             for (GLuint column=0; column<4; ++column)
                 _patch.GetData(row,column,data_points_to_interpolate(row,column));
-        */
 
         /*/////////////////////////////////////////////
         _uLine_num = 7;
@@ -907,146 +915,121 @@ namespace cagd
         _vLines = _patch.GenerateVIsoparametricLines(_vLine_num,1,divpoints);
         /////////////////////////////////////////////*/
 
-        /*
         if(_patch.UpdateDataForInterpolation(u_knot_vector,v_knot_vector,data_points_to_interpolate))
         {
-            _after_interpolation = _patch.GenerateImage(60,60,GL_STATIC_DRAW);
+            _after_interpolation = _patch.GenerateImage(30,30,GL_STATIC_DRAW);
 
             if (_after_interpolation)
                 _after_interpolation->UpdateVertexBufferObjects();
         }
 
-
-        ////test
-        ///
-        _patch2.SetData(0, 0, -1.0, -2.0, 0.0);
-        _patch2.SetData(0, 1, -1.0, -1.0, 2.0);
-        _patch2.SetData(0, 2, -1.0, 1.0, 2.0);
-        _patch2.SetData(0, 3, -1.0, 2.0, 0.0);
-
-        _patch2.SetData(1, 0, 1.0, -2.0, 0.0);
-        _patch2.SetData(1, 1, 1.0, -1.0, 0.0);
-        _patch2.SetData(1, 2, 1.0, 1.0, 0.0);
-        _patch2.SetData(1, 3, 1.0, 2.0, 0.0);
-
-        _patch2.SetData(2, 0, 2.0, -2.0, 0.0);
-        _patch2.SetData(2, 1, 2.0, -1.0, 0.0);
-        _patch2.SetData(2, 2, 2.0, 1.0, 0.0);
-        _patch2.SetData(2, 3, 2.0, 2.0, 0.0);
-
-        _patch2.SetData(3, 0, 3.0, -2.0, 0.0);
-        _patch2.SetData(3, 1, 3.0, -1.0, 0.0);
-        _patch2.SetData(3, 2, 3.0, 1.0, 0.0);
-        _patch2.SetData(3, 3, 3.0, 2.0, 0.0);
-
-        _patch2.UpdateVertexBufferObjectsOfData();
-
-        _before_interpolation2 = _patch2.GenerateImage(30,30,GL_STATIC_DRAW);
-
-        if (_before_interpolation2)
-            _before_interpolation2->UpdateVertexBufferObjects();
-
-        RowMatrix<GLdouble> u_knot_vector2(4);
-        u_knot_vector2(0) = 0.0;
-        u_knot_vector2(1) = 1.0 / 3.0;
-        u_knot_vector2(2) = 2.0 / 3.0;
-        u_knot_vector2(3) = 1.0;
-
-        ColumnMatrix<GLdouble> v_knot_vector2(4);
-        v_knot_vector2(0) = 0.0;
-        v_knot_vector2(1) = 1.0 / 3.0;
-        v_knot_vector2(2) = 2.0 / 3.0;
-        v_knot_vector2(3) = 1.0;
-
-        Matrix<DCoordinate3> data_points_to_interpolate2(4,4);
-        for (GLuint row=0; row<4; ++row)
-            for (GLuint column=0; column<4; ++column)
-                _patch2.GetData(row,column,data_points_to_interpolate2(row,column));
-
-        */
-
-        /*/////////////////////////////////////////////
+        /*
         _uLine_num = 7;
         _vLine_num = 12;
         GLuint divpoints = 200;
         _uLines = _patch.GenerateUIsoparametricLines(_uLine_num,1,divpoints);
         _vLines = _patch.GenerateVIsoparametricLines(_vLine_num,1,divpoints);
-        /////////////////////////////////////////////*/
-
-        /*
-
-        if(_patch2.UpdateDataForInterpolation(u_knot_vector2,v_knot_vector2,data_points_to_interpolate2))
-        {
-            _after_interpolation2 = _patch2.GenerateImage(30,30,GL_STATIC_DRAW);
-
-            if (_after_interpolation2)
-                _after_interpolation2->UpdateVertexBufferObjects();
-        }
         */
+
     }
 
     void GLWidget::render_patch(){
-        GLuint n = cGridn;
-        GLuint m = cGridm;
-
-        for (GLuint pi = 0; pi < n; ++pi)
-            for (GLuint pj = 0; pj < m; ++pj) {
-                _patch(pi,pj)->RenderData(GL_LINE_STRIP);
-            }
-        //_patch2.RenderData(GL_LINE_STRIP);
 
         glEnable(GL_LIGHTING);
         glEnable(GL_NORMALIZE);
         glEnable(GL_LIGHT0);
 
-        //if (_before_interpolation)
-        if (bi(0,0))
-        {
+        GLuint n = cGridn;
+        GLuint m = cGridm;
+
+        switch (_patch_index) {
+        case 0:
+            _patch.RenderData(GL_LINE_STRIP);
             _shader.Enable();
             MatFBRuby.Apply();
+            if (_before_interpolation)
+                _before_interpolation->Render();
+            _shader.Disable();
+            if (_after_interpolation)
+            {
+                glEnable(GL_BLEND);
+
+                glDepthMask(GL_FALSE);
+                glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+                MatFBTurquoise.Apply();
+                _after_interpolation->Render();
+                glDepthMask(GL_TRUE);
+                glDisable(GL_BLEND);
+
+            }
+            /*
+            // ulines
+            for (GLuint i = 0; i < _uLine_num; i++) {
+                (*_uLines)[i]->UpdateVertexBufferObjects();
+                glColor3f(1.0, 0.0, 0.0);
+                (*_uLines)[i]->RenderDerivatives(0, GL_LINE_STRIP);
+            }
+            // vlines
+            for (GLuint i = 0; i < _vLine_num; i++) {
+                (*_vLines)[i]->UpdateVertexBufferObjects();
+                glColor3f(0.0, 0.0, 1.0);
+                (*_vLines)[i]->RenderDerivatives(0, GL_LINE_STRIP);
+            }
+            */
+            break;
+        case 1:
+            if (bi_toroid(0,0))
+            {
+                _shader.Enable();
+                MatFBRuby.Apply();
 
 
+                for (GLuint pi = 0; pi < n; ++pi)
+                    for (GLuint pj = 0; pj < m; ++pj) {
+                        bi_toroid(pi,pj)->Render();
+                    }
+                _shader.Disable();
+            }
+            glDisable(GL_LIGHTING);
+            glDisable(GL_NORMALIZE);
+            glDisable(GL_LIGHT0);
             for (GLuint pi = 0; pi < n; ++pi)
                 for (GLuint pj = 0; pj < m; ++pj) {
-                    bi(pi,pj)->Render();
+                    _patch_toroid(pi,pj)->RenderData(GL_LINE_STRIP);
                 }
-            //_before_interpolation->Render();
-            //_before_interpolation2->Render();
+            break;
+        case 2:
+
+            if (bi_cylindric(0,0))
+            {
+                _shader.Enable();
+                MatFBRuby.Apply();
+
+
+                for (GLuint pi = 0; pi < n; ++pi)
+                    for (GLuint pj = 0; pj < m; ++pj) {
+                        bi_cylindric(pi,pj)->Render();
+                    }
+                _shader.Disable();
+            }
+            glDisable(GL_LIGHTING);
+            glDisable(GL_NORMALIZE);
+            glDisable(GL_LIGHT0);
+            for (GLuint pi = 0; pi < n; ++pi)
+                for (GLuint pj = 0; pj < m; ++pj) {
+                    _patch_cylindric(pi,pj)->RenderData(GL_LINE_STRIP);
+                }
+            break;
+        case 3:
+            glDisable(GL_LIGHTING);
+            glDisable(GL_NORMALIZE);
+            glDisable(GL_LIGHT0);
             _shader.Disable();
+            render_bspline_arc();
+            break;
+        default:
+            break;
         }
-
-        /*if (_after_interpolation)
-        {
-            glEnable(GL_BLEND);
-
-            glDepthMask(GL_FALSE);
-            glBlendFunc(GL_SRC_ALPHA,GL_ONE);
-            MatFBTurquoise.Apply();
-            _after_interpolation->Render();
-            glDepthMask(GL_TRUE);
-            glDisable(GL_BLEND);
-
-        }*/
-
-        glDisable(GL_LIGHTING);
-        glDisable(GL_NORMALIZE);
-        glDisable(GL_LIGHT0);
-
-        /*
-        //ulines
-        for (GLuint i = 0; i < _uLine_num; i++) {
-            (*_uLines)[i]->UpdateVertexBufferObjects();
-            glColor3f(1.0, 0.0, 0.0);
-            (*_uLines)[i]->RenderDerivatives(0, GL_LINE_STRIP);
-        }
-        //vlines
-        for (GLuint i = 0; i < _vLine_num; i++) {
-            (*_vLines)[i]->UpdateVertexBufferObjects();
-            glColor3f(0.0, 0.0, 1.0);
-            (*_vLines)[i]->RenderDerivatives(0, GL_LINE_STRIP);
-        }
-        //////////////////////////////////////////*/
-
     }
 
     void GLWidget::start_animate()

@@ -37,6 +37,8 @@ namespace cagd
         // your other declarations;
         int         _index, _cc_index, _page_index;
         int         _ps_index, _mo_index, _shader_index;
+        int         _patch_index = 0;
+
 
         // variables needed by parametric curves;
         RowMatrix<ParametricCurve3*> _pc;
@@ -80,15 +82,18 @@ namespace cagd
         GLuint cGridn, cGridm, nPatchn, nPatchm;
 
 
-        Matrix<BicubicBSplinePatch*> _patch;
+        Matrix<BicubicBSplinePatch*> _patch_toroid;
+        Matrix<BicubicBSplinePatch*> _patch_cylindric;
+        BicubicBSplinePatch _patch;
 
         RowMatrix<GenericCurve3*>* _uLines;
         RowMatrix<GenericCurve3*>* _vLines;
         GLuint _uLine_num, _vLine_num;
 
-        Matrix<TriangulatedMesh3*> bi;
+        Matrix<TriangulatedMesh3*> bi_toroid;
+        Matrix<TriangulatedMesh3*> bi_cylindric;
+
         TriangulatedMesh3 *_before_interpolation, *_after_interpolation;
-        TriangulatedMesh3 *_before_interpolation2, *_after_interpolation2;
 
         // B-spline Arc variables
         // GLuint _n;              // num of Arc points points, 4 by default
@@ -150,9 +155,9 @@ namespace cagd
         void set_shader_smoothing(double value);
         void set_shader_shading(double value);
         void set_shader_index(int index);
-        void set_patch_index();
+        void set_patch_index(int index);
 
-        DCoordinate3 getCylinderPoint(GLuint i, GLuint j, GLuint n, GLuint m, GLuint r=1, GLfloat a=0, GLfloat b=1);
+        DCoordinate3 getCylinderPoint(GLuint i, GLuint j, GLuint n, GLuint m, GLuint r=1, GLfloat a=-1, GLfloat b=1);
         DCoordinate3 getTorusPoint(GLuint i, GLuint j, GLuint n, GLuint m, GLfloat r=0.75, GLfloat R=1.5);
     };
 }

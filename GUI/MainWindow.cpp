@@ -49,7 +49,7 @@ namespace cagd
         connect(_side_widget->trans_y_spin_box, SIGNAL(valueChanged(double)), _gl_widget, SLOT(set_trans_y(double)));
         connect(_side_widget->trans_z_spin_box, SIGNAL(valueChanged(double)), _gl_widget, SLOT(set_trans_z(double)));
 
-        _side_widget->toolBox->setCurrentIndex(0);
+        _side_widget->toolBox->setCurrentIndex(5);
         // parametric curves
         connect(_side_widget->pc_combo, SIGNAL(currentIndexChanged(int)), _gl_widget, SLOT(set_parametric_curve_index(int)));
 
@@ -70,7 +70,8 @@ namespace cagd
         connect(_side_widget->sh_combo, SIGNAL(currentIndexChanged(int)), _gl_widget, SLOT(set_shader_index(int)));
 
         // patches
-        connect(_side_widget->showbutton_patch,SIGNAL(pressed()), _gl_widget, SLOT(set_patch_index()));
+        connect(_side_widget->patch_comb,SIGNAL(currentIndexChanged(int)),_gl_widget,SLOT(set_patch_index(int)));
+
     }
 
     //--------------------------------
