@@ -75,12 +75,18 @@ namespace cagd
         GLfloat _shading = 1.0f;
 
         // B-spline Patch variables
-        BicubicBSplinePatch _patch;
-        BicubicBSplinePatch _patch2;
+        //BicubicBSplinePatch _patch;
+        //BicubicBSplinePatch _patch2;
+        GLuint cGridn, cGridm, nPatchn, nPatchm;
+
+
+        Matrix<BicubicBSplinePatch*> _patch;
+
         RowMatrix<GenericCurve3*>* _uLines;
         RowMatrix<GenericCurve3*>* _vLines;
         GLuint _uLine_num, _vLine_num;
 
+        Matrix<TriangulatedMesh3*> bi;
         TriangulatedMesh3 *_before_interpolation, *_after_interpolation;
         TriangulatedMesh3 *_before_interpolation2, *_after_interpolation2;
 
@@ -145,5 +151,8 @@ namespace cagd
         void set_shader_shading(double value);
         void set_shader_index(int index);
         void set_patch_index();
+
+        DCoordinate3 getCylinderPoint(GLuint i, GLuint j, GLuint n, GLuint m, GLuint r=1, GLfloat a=0, GLfloat b=1);
+        DCoordinate3 getTorusPoint(GLuint i, GLuint j, GLuint n, GLuint m, GLfloat r=0.75, GLfloat R=1.5);
     };
 }

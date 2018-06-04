@@ -162,7 +162,9 @@ namespace cagd
                 break;
             default:
                 //_shader.Disable();
-                render_bspline_arc();
+
+                //render_bspline_arc();
+                render_patch();
                 break;
             }
 
@@ -757,8 +759,98 @@ namespace cagd
         }
     }
 
+    DCoordinate3 GLWidget::getCylinderPoint(GLuint i, GLuint j, GLuint n, GLuint m, GLuint r, GLfloat a, GLfloat b)
+    {
+        GLfloat u, v;
+        u = a + i*((b-a)/(n+1));
+        v = (2*j*PI)/(m+1);
+
+        GLfloat x,y,z;
+        x = r*cos(v);
+        y = r*sin(v);
+        z = u;
+
+        DCoordinate3 cp;
+        cp[0] = x;
+        cp[1] = y;
+        cp[2] = z;
+
+        return cp;
+    }
+
+    DCoordinate3 GLWidget::getTorusPoint(GLuint i, GLuint j, GLuint n, GLuint m, GLfloat r, GLfloat R)
+    {
+        GLfloat u, v;
+        u = (2*i*PI)/(n+1);
+        v = (2*j*PI)/(m+1);
+
+        GLfloat x,y,z;
+        x = (R + r*sin(u))*cos(v);
+        y = (R + r*sin(u))*sin(v);
+        z = r*cos(u);
+
+        DCoordinate3 cp;
+        cp[0] = x;
+        cp[1] = y;
+        cp[2] = z;
+
+        return cp;
+    }
+
     void GLWidget::init_patch()
     {
+        cGridn=7;
+        cGridm=9;
+        nPatchn=7;
+        nPatchm=9;
+
+        GLuint n = cGridn;
+        GLuint m = cGridm;
+
+        Matrix<DCoordinate3> cp;
+        cp.ResizeRows(n);
+        cp.ResizeColumns(m);
+
+        for (GLuint i = 0; i < n; ++i)
+            for (GLuint j = 0; j < m; ++j)
+                cp(i,j) = getTorusPoint(i,j,n-1,m-1);
+                //cp(i,j) = getCylinderPoint(i,j,n-1,m-1);
+
+
+        _patch.ResizeRows(n);
+        _patch.ResizeColumns(m);
+
+        for (GLuint i = 0; i < n; ++i)
+            for (GLuint j = 0; j < m; ++j)
+                _patch(i,j) = new BicubicBSplinePatch();
+
+
+        for (GLuint pi = 0; pi < n; ++pi)
+            for (GLuint pj = 0; pj < m; ++pj)
+                for (GLuint i = 0; i < 4; ++i)
+                    for (GLuint j = 0; j < 4; ++j) {
+
+                        _patch(pi,pj)->SetData(i,j,cp((pi+i)%n,(pj+j)%m)[0],cp((pi+i)%n,(pj+j)%m)[1],cp((pi+i)%n,(pj+j)%m)[2]);
+
+                    }
+
+        bi.ResizeRows(n);
+        bi.ResizeColumns(m);
+
+        for (GLuint pi = 0; pi < n; ++pi)
+            for (GLuint pj = 0; pj < m; ++pj) {
+                _patch(pi,pj)->UpdateVertexBufferObjectsOfData();
+                //_before_interpolation = _patch(pi,pj)->GenerateImage(30,30,GL_STATIC_DRAW);
+                bi(pi,pj) = _patch(pi,pj)->GenerateImage(30,30,GL_STATIC_DRAW);
+
+                //if (_before_interpolation)
+                //    _before_interpolation->UpdateVertexBufferObjects();
+
+                if (bi(pi,pj))
+                    bi(pi,pj)->UpdateVertexBufferObjects();
+            }
+
+        /*
         _patch.SetData(0, 0, -2.0, -2.0, 0.0);
         _patch.SetData(0, 1, -2.0, -1.0, 0.0);
         _patch.SetData(0, 2, -2.0, 1.0, 0.0);
@@ -781,6 +873,7 @@ namespace cagd
 
         _patch.UpdateVertexBufferObjectsOfData();
 
+
         _before_interpolation = _patch.GenerateImage(30,30,GL_STATIC_DRAW);
 
         if (_before_interpolation)
@@ -798,10 +891,13 @@ namespace cagd
         v_knot_vector(2) = 2.0 / 3.0;
         v_knot_vector(3) = 1.0;
 
+
+
         Matrix<DCoordinate3> data_points_to_interpolate(4,4);
         for (GLuint row=0; row<4; ++row)
             for (GLuint column=0; column<4; ++column)
                 _patch.GetData(row,column,data_points_to_interpolate(row,column));
+        */
 
         /*/////////////////////////////////////////////
         _uLine_num = 7;
@@ -811,6 +907,7 @@ namespace cagd
         _vLines = _patch.GenerateVIsoparametricLines(_vLine_num,1,divpoints);
         /////////////////////////////////////////////*/
 
+        /*
         if(_patch.UpdateDataForInterpolation(u_knot_vector,v_knot_vector,data_points_to_interpolate))
         {
             _after_interpolation = _patch.GenerateImage(60,60,GL_STATIC_DRAW);
@@ -866,6 +963,8 @@ namespace cagd
             for (GLuint column=0; column<4; ++column)
                 _patch2.GetData(row,column,data_points_to_interpolate2(row,column));
 
+        */
+
         /*/////////////////////////////////////////////
         _uLine_num = 7;
         _vLine_num = 12;
@@ -874,6 +973,8 @@ namespace cagd
         _vLines = _patch.GenerateVIsoparametricLines(_vLine_num,1,divpoints);
         /////////////////////////////////////////////*/
 
+        /*
+
         if(_patch2.UpdateDataForInterpolation(u_knot_vector2,v_knot_vector2,data_points_to_interpolate2))
         {
             _after_interpolation2 = _patch2.GenerateImage(30,30,GL_STATIC_DRAW);
@@ -881,23 +982,36 @@ namespace cagd
             if (_after_interpolation2)
                 _after_interpolation2->UpdateVertexBufferObjects();
         }
+        */
     }
 
     void GLWidget::render_patch(){
+        GLuint n = cGridn;
+        GLuint m = cGridm;
 
-        _patch.RenderData(GL_LINE_STRIP);
-        _patch2.RenderData(GL_LINE_STRIP);
+        for (GLuint pi = 0; pi < n; ++pi)
+            for (GLuint pj = 0; pj < m; ++pj) {
+                _patch(pi,pj)->RenderData(GL_LINE_STRIP);
+            }
+        //_patch2.RenderData(GL_LINE_STRIP);
 
         glEnable(GL_LIGHTING);
         glEnable(GL_NORMALIZE);
         glEnable(GL_LIGHT0);
 
-        if (_before_interpolation)
+        //if (_before_interpolation)
+        if (bi(0,0))
         {
             _shader.Enable();
             MatFBRuby.Apply();
-            _before_interpolation->Render();
-            _before_interpolation2->Render();
+
+
+            for (GLuint pi = 0; pi < n; ++pi)
+                for (GLuint pj = 0; pj < m; ++pj) {
+                    bi(pi,pj)->Render();
+                }
+            //_before_interpolation->Render();
+            //_before_interpolation2->Render();
             _shader.Disable();
         }
 
