@@ -1013,13 +1013,13 @@ namespace cagd
                 _shader.Enable();
                 MatFBRuby.Apply();
 
-
                 for (GLuint pi = 0; pi < n; ++pi)
                     for (GLuint pj = 0; pj < m; ++pj) {
                         bi_cylindric(pi,pj)->Render();
                     }
                 _shader.Disable();
             }
+
             glDisable(GL_LIGHTING);
             glDisable(GL_NORMALIZE);
             glDisable(GL_LIGHT0);
@@ -1034,6 +1034,62 @@ namespace cagd
             glDisable(GL_LIGHT0);
             _shader.Disable();
             render_bspline_arc();
+            break;
+        default:
+            break;
+        }
+    }
+
+    void GLWidget::set_patch_i(double value){
+        if (_patch_i != value )
+            _patch_i = value;
+    }
+    void GLWidget::set_patch_j(double value){
+        if (_patch_j != value )
+            _patch_j = value;
+    }
+    void GLWidget::set_dcoord_i(double value){
+        if (_dcoord_i != value )
+            _dcoord_i = value;
+    }
+    void GLWidget::set_dcoord_j(double value){
+        if (_dcoord_j != value )
+            _dcoord_j = value;
+    }
+    void GLWidget::set_modify_x(double value){
+        if (_modify_x != value)
+            _modify_x = value;
+        modify();
+    }
+    void GLWidget::set_modify_y(double value){
+        if (_modify_y != value)
+            _modify_y = value;
+        modify();
+    }
+    void GLWidget::set_modify_z(double value){
+        if (_modify_z != value)
+            _modify_z = value;
+        modify();
+    }
+
+    void GLWidget::modify(){
+
+        switch (_patch_index) {
+        case 1:
+            _patch_toroid(_patch_i,_patch_j)->SetData(_dcoord_i,_dcoord_j,_modify_x,_modify_y,_modify_z);
+            _patch_toroid(_patch_i,_patch_j)->UpdateVertexBufferObjectsOfData();
+            bi_toroid(_patch_i,_patch_j) = _patch_toroid(_patch_i,_patch_j)->GenerateImage(30,30,GL_STATIC_DRAW);
+            if (bi_toroid(_patch_i,_patch_j))
+                bi_toroid(_patch_i,_patch_j)->UpdateVertexBufferObjects();
+            render_patch();
+            break;
+        case 2:
+            _patch_cylindric(_patch_i,_patch_j)->SetData(_dcoord_i,_dcoord_j,_modify_x,_modify_y,_modify_z);
+            _patch_cylindric(_patch_i,_patch_j)->UpdateVertexBufferObjectsOfData();
+            bi_cylindric(_patch_i,_patch_j) = _patch_cylindric(_patch_i,_patch_j)->GenerateImage(30,30,GL_STATIC_DRAW);
+            if (bi_cylindric(_patch_i,_patch_j))
+                bi_cylindric(_patch_i,_patch_j)->UpdateVertexBufferObjects();
+            render_patch();
             break;
         default:
             break;

@@ -38,7 +38,8 @@ namespace cagd
         int         _index, _cc_index, _page_index;
         int         _ps_index, _mo_index, _shader_index;
         int         _patch_index = 0;
-
+        int         _patch_i=1, _patch_j=1,_dcoord_i=1,_dcoord_j=1;
+        double      _modify_x=1, _modify_y=1, _modify_z=1;
 
         // variables needed by parametric curves;
         RowMatrix<ParametricCurve3*> _pc;
@@ -156,6 +157,14 @@ namespace cagd
         void set_shader_shading(double value);
         void set_shader_index(int index);
         void set_patch_index(int index);
+        void modify();
+        void set_patch_i(double value);
+        void set_patch_j(double value);
+        void set_dcoord_i(double value);
+        void set_dcoord_j(double value);
+        void set_modify_x(double value);
+        void set_modify_y(double value);
+        void set_modify_z(double value);
 
         DCoordinate3 getCylinderPoint(GLuint i, GLuint j, GLuint n, GLuint m, GLuint r=1, GLfloat a=-1, GLfloat b=1);
         DCoordinate3 getTorusPoint(GLuint i, GLuint j, GLuint n, GLuint m, GLfloat r=0.75, GLfloat R=1.5);

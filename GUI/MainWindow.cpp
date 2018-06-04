@@ -72,6 +72,15 @@ namespace cagd
         // patches
         connect(_side_widget->patch_comb,SIGNAL(currentIndexChanged(int)),_gl_widget,SLOT(set_patch_index(int)));
 
+        connect(_side_widget->patch_i,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_patch_i(double)));
+        connect(_side_widget->patch_j,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_patch_j(double)));
+        connect(_side_widget->dcoord_i,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_dcoord_i(double)));
+        connect(_side_widget->dcoord_j,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_dcoord_j(double)));
+        connect(_side_widget->modify_x,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_modify_x(double)));
+        connect(_side_widget->modify_y,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_modify_y(double)));
+        connect(_side_widget->modify_z,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_modify_z(double)));
+        connect(_side_widget->pushButton,SIGNAL(pressed()),_gl_widget,SLOT(modify()));
+
     }
 
     //--------------------------------
