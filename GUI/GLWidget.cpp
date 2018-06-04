@@ -754,10 +754,11 @@ namespace cagd
                 glColor3f(1.0, 0.0, 0.0);
                 _img_bspa[i]->RenderDerivatives(0, GL_LINE_STRIP);
 
-                //glColor3f(0.0, 0.5, 0.0);
-                //_img_bspa[i]->RenderDerivatives(1, GL_LINES);
+                glColor3f(0.0, 0.5, 0.0);
+                _img_bspa[i]->RenderDerivatives(1, GL_LINES);
             }
         }
+        glColor3f(1.0, 1.0, 1.0);
     }
 
     DCoordinate3 GLWidget::getCylinderPoint(GLuint i, GLuint j, GLuint n, GLuint m, GLuint r, GLfloat a, GLfloat b)

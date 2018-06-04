@@ -96,6 +96,7 @@ GLboolean BicubicBSplinePatch::CalculatePartialDerivatives(
         pd(0,0) += aux_d0_v * u_blending_values(row);
         pd(1,0) += aux_d0_v * d1_u_blending_values(row);
         pd(1,1) += aux_d1_v * u_blending_values(row);
+
     }
     return GL_TRUE;
 }
