@@ -39,7 +39,7 @@ namespace cagd
         int         _ps_index, _mo_index, _shader_index;
         int         _patch_index = 0;
         int         _patch_i=1, _patch_j=1,_dcoord_i=1,_dcoord_j=1;
-        double      _modify_x=1, _modify_y=1, _modify_z=1;
+        double      _modify_x=0, _modify_y=0, _modify_z=0;
 
         // variables needed by parametric curves;
         RowMatrix<ParametricCurve3*> _pc;

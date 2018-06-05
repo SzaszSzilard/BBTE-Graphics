@@ -31,6 +31,29 @@ namespace cagd
         for (GLuint i = 0; i < _num_of_pc; i++)
             if (_image_of_pc[i])
                 delete _image_of_pc[i], _image_of_pc[i] = 0;
+
+        for (GLuint i = 0; i < _num_of_ps; i++)
+            if (_ps[i])
+                delete _ps[i], _ps[i] = 0;
+
+        for (GLuint i = 0; i < _num_of_ps; i++)
+            if (_image_of_ps[i])
+                delete _image_of_ps[i], _image_of_ps[i] = 0;
+
+        for (GLuint i = 0; i < _num_of_cc; i++)
+            if (_cc[i])
+                delete _cc[i], _cc[i] = 0;
+
+        for (GLuint i = 0; i < _num_of_cc; i++)
+            if (_img_cc[i])
+                delete _img_cc[i], _img_cc[i] = 0;
+
+        for (GLuint i = 0; i < _num_of_mo; i++)
+            if (_image_of_mo[i])
+                delete _image_of_mo[i], _image_of_mo[i] = 0;
+
+
+
         if (_before_interpolation)
             delete _before_interpolation, _before_interpolation = 0;
 
@@ -1073,27 +1096,83 @@ namespace cagd
     }
 
     void GLWidget::modify(){
+        GLuint n = cGridn;
+        GLuint m = cGridm;
+
+        DCoordinate3 temp;
+        DCoordinate3 temp2;
+        DCoordinate3 prev;
 
         switch (_patch_index) {
         case 1:
-            _patch_toroid(_patch_i,_patch_j)->SetData(_dcoord_i,_dcoord_j,_modify_x,_modify_y,_modify_z);
+            _patch_toroid(_patch_i,_patch_j)->GetData(_dcoord_i,_dcoord_j,temp);
+            prev.x() = temp.x();
+            prev.y() = temp.y();
+            prev.z() = temp.z();
+
+            temp.x() += _modify_x;
+            temp.y() += _modify_y;
+            temp.z() += _modify_z;
+            //_patch_toroid(_patch_i,_patch_j)->SetData(_dcoord_i,_dcoord_j,_modify_x,_modify_y,_modify_z);
+            _patch_toroid(_patch_i,_patch_j)->SetData(_dcoord_i,_dcoord_j,temp.x(),temp.y(),temp.z());
             _patch_toroid(_patch_i,_patch_j)->UpdateVertexBufferObjectsOfData();
             bi_toroid(_patch_i,_patch_j) = _patch_toroid(_patch_i,_patch_j)->GenerateImage(30,30,GL_STATIC_DRAW);
             if (bi_toroid(_patch_i,_patch_j))
                 bi_toroid(_patch_i,_patch_j)->UpdateVertexBufferObjects();
+
+            //Update the others
+            for (GLuint pi = 0; pi < n; ++pi)
+                for (GLuint pj = 0; pj < m; ++pj)
+                    for (GLuint i = 0; i < 4; ++i)
+                        for (GLuint j = 0; j < 4; ++j) {
+                            _patch_toroid(pi,pj)->GetData(i,j,temp2);
+                            if (prev.x() == temp2.x() && prev.y() == temp2.y() && prev.z() == temp2.z()){
+                                _patch_toroid(pi,pj)->SetData(i,j,temp.x(),temp.y(),temp.z());
+                                _patch_toroid(pi,pj)->UpdateVertexBufferObjectsOfData();
+                                bi_toroid(pi,pj) = _patch_toroid(pi,pj)->GenerateImage(30,30,GL_STATIC_DRAW);
+                                if (bi_toroid(pi,pj))
+                                    bi_toroid(pi,pj)->UpdateVertexBufferObjects();
+                            }
+                        }
             render_patch();
             break;
         case 2:
-            _patch_cylindric(_patch_i,_patch_j)->SetData(_dcoord_i,_dcoord_j,_modify_x,_modify_y,_modify_z);
+            _patch_cylindric(_patch_i,_patch_j)->GetData(_dcoord_i,_dcoord_j,temp);
+            prev.x() = temp.x();
+            prev.y() = temp.y();
+            prev.z() = temp.z();
+
+            temp.x() += _modify_x;
+            temp.y() += _modify_y;
+            temp.z() += _modify_z;
+            //_patch_toroid(_patch_i,_patch_j)->SetData(_dcoord_i,_dcoord_j,_modify_x,_modify_y,_modify_z);
+            _patch_cylindric(_patch_i,_patch_j)->SetData(_dcoord_i,_dcoord_j,temp.x(),temp.y(),temp.z());
             _patch_cylindric(_patch_i,_patch_j)->UpdateVertexBufferObjectsOfData();
             bi_cylindric(_patch_i,_patch_j) = _patch_cylindric(_patch_i,_patch_j)->GenerateImage(30,30,GL_STATIC_DRAW);
             if (bi_cylindric(_patch_i,_patch_j))
                 bi_cylindric(_patch_i,_patch_j)->UpdateVertexBufferObjects();
+
+            //Update the others
+            for (GLuint pi = 0; pi < n; ++pi)
+                for (GLuint pj = 0; pj < m; ++pj)
+                    for (GLuint i = 0; i < 4; ++i)
+                        for (GLuint j = 0; j < 4; ++j) {
+                            _patch_cylindric(pi,pj)->GetData(i,j,temp2);
+                            if (prev.x() == temp2.x() && prev.y() == temp2.y() && prev.z() == temp2.z()){
+                                _patch_cylindric(pi,pj)->SetData(i,j,temp.x(),temp.y(),temp.z());
+                                _patch_cylindric(pi,pj)->UpdateVertexBufferObjectsOfData();
+                                bi_cylindric(pi,pj) = _patch_cylindric(pi,pj)->GenerateImage(30,30,GL_STATIC_DRAW);
+                                if (bi_cylindric(pi,pj))
+                                    bi_cylindric(pi,pj)->UpdateVertexBufferObjects();
+                            }
+                        }
             render_patch();
+            break;
             break;
         default:
             break;
         }
+        updateGL();
     }
 
     void GLWidget::start_animate()

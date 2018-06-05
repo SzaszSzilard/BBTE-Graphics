@@ -79,7 +79,6 @@ namespace cagd
         connect(_side_widget->modify_x,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_modify_x(double)));
         connect(_side_widget->modify_y,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_modify_y(double)));
         connect(_side_widget->modify_z,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_modify_z(double)));
-        connect(_side_widget->pushButton,SIGNAL(pressed()),_gl_widget,SLOT(modify()));
 
     }
 
