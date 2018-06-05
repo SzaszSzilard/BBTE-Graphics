@@ -756,6 +756,11 @@
           <string>Curve</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>Loaded</string>
+         </property>
+        </item>
        </widget>
       </item>
      </layout>
@@ -933,7 +938,7 @@
       <rect>
        <x>170</x>
        <y>30</y>
-       <width>101</width>
+       <width>114</width>
        <height>22</height>
       </rect>
      </property>
@@ -999,6 +1004,32 @@
         </property>
         <property name="value">
          <double>1.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>150</y>
+       <width>271</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_11">
+      <item>
+       <widget class="QPushButton" name="load">
+        <property name="text">
+         <string>LoadFromFile</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="save">
+        <property name="text">
+         <string>SaveToFile</string>
         </property>
        </widget>
       </item>

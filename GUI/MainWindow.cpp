@@ -80,6 +80,8 @@ namespace cagd
         connect(_side_widget->modify_y,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_modify_y(double)));
         connect(_side_widget->modify_z,SIGNAL(valueChanged(double)),_gl_widget, SLOT(set_modify_z(double)));
 
+        connect(_side_widget->load,SIGNAL(pressed()),_gl_widget,SLOT(callload()));
+        connect(_side_widget->save,SIGNAL(pressed()),_gl_widget,SLOT(callsave()));
     }
 
     //--------------------------------

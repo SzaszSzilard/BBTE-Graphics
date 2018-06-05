@@ -85,14 +85,21 @@ namespace cagd
 
         Matrix<BicubicBSplinePatch*> _patch_toroid;
         Matrix<BicubicBSplinePatch*> _patch_cylindric;
+        Matrix<BicubicBSplinePatch*> _patch_loaded;
         BicubicBSplinePatch _patch;
 
         RowMatrix<GenericCurve3*>* _uLines;
         RowMatrix<GenericCurve3*>* _vLines;
+        Matrix<RowMatrix<GenericCurve3*>*> _patch_uLines_toroid;
+        Matrix<RowMatrix<GenericCurve3*>*> _patch_vLines_toroid;
+        Matrix<RowMatrix<GenericCurve3*>*> _patch_uLines_cylindric;
+        Matrix<RowMatrix<GenericCurve3*>*> _patch_vLines_cylindric;
+
         GLuint _uLine_num, _vLine_num;
 
         Matrix<TriangulatedMesh3*> bi_toroid;
         Matrix<TriangulatedMesh3*> bi_cylindric;
+        Matrix<TriangulatedMesh3*> bi_loaded;
 
         TriangulatedMesh3 *_before_interpolation, *_after_interpolation;
 
@@ -165,6 +172,10 @@ namespace cagd
         void set_modify_x(double value);
         void set_modify_y(double value);
         void set_modify_z(double value);
+        void save_patch( const Matrix<BicubicBSplinePatch*>& _tpatch );
+        void load_patch( Matrix<BicubicBSplinePatch*>& _tpatch );
+        void callload();
+        void callsave();
 
         DCoordinate3 getCylinderPoint(GLuint i, GLuint j, GLuint n, GLuint m, GLuint r=1, GLfloat a=-1, GLfloat b=1);
         DCoordinate3 getTorusPoint(GLuint i, GLuint j, GLuint n, GLuint m, GLfloat r=0.75, GLfloat R=1.5);
